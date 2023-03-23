@@ -1,7 +1,7 @@
 name: "deliver to Kubernetes"
 on:
   workflow_run:
-    workflows: [Build, Test, and Publish Docker Image]
+    workflows: [Build Docker Image]
     types:
       - completed
 
