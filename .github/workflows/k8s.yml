@@ -32,9 +32,8 @@ jobs:
       - name: Test Deployment
         run: |
           kubectl describe services/rps-app
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -ti $POD_NAME -- curl --fail localhost:5000/health
-          kubectl exec -ti $POD_NAME -- curl --fail -X POST -H 'Content-Type: application/json' localhost:5000/rps -d '{"move": "Rock"}' 
+          kubectl port-forward service/it 5000:5000 > /dev/null &
+          ENDPOINT=http://localhost:5000 pytest -v tests/integration
       - name: Cleanup
         if: always()
         run: |
