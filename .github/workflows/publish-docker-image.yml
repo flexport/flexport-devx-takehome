@@ -1,0 +1,53 @@
+name: Build, Test, and Publish Docker Image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: rock_paper_scissors:${{ github.sha }}
+
+      - name: Run Tests
+        run: |
+          docker run --rm -d -p 8080:5000 rock_paper_scissors:${{ github.sha }}
+          sleep 5s 
+          curl --fail --silent http://localhost:8080/health > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "health test succeeded"
+          else
+            echo "health test failed"
+            exit 1
+          fi
+          curl --fail --silent -X POST -H 'Content-Type: application/json' http://127.0.0.1:8080/rps -d '{"move": "Rock"}' > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "POST test succeeded"
+          else
+            echo "POST failed"
+            exit 1
+          fi
+          
+      - name: Publish Docker Image
+        if: ${{ job.status == 'success' }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/flexport/rock_paper_scissors:latest
+        env:
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
