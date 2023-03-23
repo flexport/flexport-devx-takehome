@@ -22,7 +22,7 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy Application
         run: |
-          kubectl create deployment rps-app --image=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:main
+          kubectl create deployment rps-app --image=ghcr.io/${{ github.repository }}:main
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/rps-app --type=NodePort --port 5000
       - name: Test Deployment
