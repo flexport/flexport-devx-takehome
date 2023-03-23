@@ -1,9 +1,14 @@
 name: "deliver to Kubernetes"
-on: [pull_request, push]
+on:
+  workflow_run:
+    workflows: [Build, Test, and Publish Docker Image]
+    types:
+      - completed
 
 jobs:
   kind:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
       - name: Create k8s Kind Cluster
@@ -17,12 +22,12 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy Application
         run: |
-          kubectl create deployment flexport-devx-takehome --image=ghcr.io/xinyuxinyuye/flexport-devx-takehome:main
+          kubectl create deployment rps-app --image=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:main
           kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/flexport-devx-takehome --type=NodePort --port 5000
+          kubectl expose deployment/rps-app --type=NodePort --port 5000
       - name: Test Deployment
         run: |
-          kubectl describe services/flexport-devx-takehome
+          kubectl describe services/rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl exec -ti $POD_NAME -- curl --fail localhost:5000/health
           kubectl exec -ti $POD_NAME -- curl --fail -X POST -H 'Content-Type: application/json' localhost:5000/rps -d '{"move": "Rock"}' 
