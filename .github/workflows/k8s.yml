@@ -22,7 +22,8 @@ jobs:
           kubectl expose deployment/flexport-devx-takehome --type=NodePort --port 5000
       - name: Test Deployment
         run: |
-          export IP=$(kubectl get services/flexport-devx-takehome -o go-template='{{(index .spec.ports 0).ip}}')
+          kubectl get services/flexport-devx-takehome
+          export IP=$(kubectl get services/flexport-devx-takehome -o go-template='{{.spec.clusterIP}}')
           export NODE_PORT=$(kubectl get services/flexport-devx-takehome -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo $IP:$NODE_PORT
           kubectl describe services/flexport-devx-takehome
