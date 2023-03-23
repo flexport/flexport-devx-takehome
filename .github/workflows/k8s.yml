@@ -22,13 +22,10 @@ jobs:
           kubectl expose deployment/flexport-devx-takehome --type=NodePort --port 5000
       - name: Test Deployment
         run: |
-          kubectl get services/flexport-devx-takehome
-          export IP=$(kubectl get services/flexport-devx-takehome -o go-template='{{.spec.clusterIP}}')
-          export NODE_PORT=$(kubectl get services/flexport-devx-takehome -o go-template='{{(index .spec.ports 0).nodePort}}')
-          echo $IP:$NODE_PORT
           kubectl describe services/flexport-devx-takehome
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          curl --fail ${IP}:${NODE_PORT}/health
+          kubectl exec -ti $POD_NAME -- curl --fail localhost:5000/health
+          kubectl exec -ti $POD_NAME -- curl --fail -X POST -H 'Content-Type: application/json' localhost:5000/rps -d '{"move": "Rock"}' 
       - name: Cleanup
         if: always()
         run: |

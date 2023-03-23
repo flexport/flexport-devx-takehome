@@ -2,6 +2,9 @@ FROM python:3.10.10-slim
 
 WORKDIR /app
 
+RUN apt update && apt upgrade
+RUN apt install -y curl
+
 COPY ./src ./src
 
 COPY requirements.txt ./
