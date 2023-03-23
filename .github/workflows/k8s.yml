@@ -17,7 +17,7 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy Application
         run: |
-          kubectl create deployment kubernetes-bootcamp --image=ghcr.io/xinyuxinyuye/flexport-devx-takehome:main
+          kubectl create deployment flexport-devx-takehome --image=ghcr.io/xinyuxinyuye/flexport-devx-takehome:main
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/flexport-devx-takehome --type=NodePort --port 5000
       - name: Test Deployment
