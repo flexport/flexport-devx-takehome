@@ -4,6 +4,10 @@ on:
     workflows: [Build Docker Image]
     types:
       - completed
+      
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   kind:
