@@ -29,11 +29,14 @@ jobs:
           kubectl create deployment rps-app --image=ghcr.io/${{ github.repository }}:main
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/rps-app --type=NodePort --port 5000
+      - name: install test dependencis
+        run: |
+          pip install pytest
       - name: Test Deployment
         run: |
           kubectl describe services/rps-app
-          kubectl port-forward service/it 5000:5000 > /dev/null &
-          ENDPOINT=http://localhost:5000 pytest -v tests/integration
+          kubectl port-forward service/rps-app 5000:5000 > /dev/null &
+          ENDPOINT=http://localhost:5000 pytest tests/integration
       - name: Cleanup
         if: always()
         run: |
