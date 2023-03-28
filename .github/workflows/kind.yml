@@ -8,7 +8,7 @@ on:
       - 'v*'
   pull_request:
     types:
-      - 'completed'
+      - 'closed'
     branches:
       - 'main'
       
@@ -24,9 +24,6 @@ jobs:
   kind:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Docker Image Build and Push successful."
-      
       - uses: actions/checkout@v3
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
@@ -40,14 +37,15 @@ jobs:
       
       - name: Deploy Application
         run: |
-          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:main
-          kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 5000
+          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:latest
+          kubectl cluster-info
+          kubectl wait pods -n default -l run=rock-paper-scissors-app --for condition=Ready --timeout=90s
+          kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 6000
       
-      - name: Test Deployment
+      - name: Test Deployment on Server
         run: |
-          kubectl describe svc rock-paper-scissors-app
-          kubectl port-forward service/rock-paper-scissors-app 5000:6000 > /dev/null &
+          kubectl describe services/rock-paper-scissors-app
+          kubectl port-forward service/rock-paper-scissors-app 6000:5000 > /dev/null
           ENDPOINT=http://localhost:5000 pytest tests/integration
       
       - name: Cleanup
