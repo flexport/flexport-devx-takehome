@@ -45,7 +45,7 @@ jobs:
       - name: Test Deployment on Server
         run: |
           kubectl describe services/rock-paper-scissors-app
-          kubectl port-forward service/rock-paper-scissors-app 5000:5000 > /dev/null &
+          kubectl port-forward service/rock-paper-scissors-app 5000:6000 > /dev/null &
           ENDPOINT=http://localhost:5000 pytest tests/integration
       
       - name: Cleanup
