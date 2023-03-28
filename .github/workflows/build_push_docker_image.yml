@@ -37,7 +37,7 @@ jobs:
           
       - name: Run Docker Image Test
         run: |
-          docker run -d -i -t --rm --name rock-paper-scissors-app -p 8080:5000 ${{ github.repository }}:${{ github.sha }}
+          docker run --rm -d --name rock-paper-scissors-app -p 8080:5000 ${{ github.repository }}:${{ github.sha }}
       
           curl --silent --fail --max-time 3 --connect-timeout 10 --max-time 10 --connect-timeout 30 http://127.0.0.1:5000/health  > /dev/null
           if [ $? -eq 0 ]; then
