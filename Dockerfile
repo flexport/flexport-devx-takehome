@@ -1,5 +1,5 @@
 #FROM scratch
-FROM debian:bullseye-slim
+FROM python:3.9.16-slim-bullseye
 
 WORKDIR /rps_app
 
