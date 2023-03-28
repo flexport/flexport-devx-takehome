@@ -23,7 +23,10 @@ env:
 jobs:
   kind:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - run: echo "Docker Image Build and Push successful."
+      
       - uses: actions/checkout@v3
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
@@ -37,10 +40,9 @@ jobs:
       
       - name: Deploy Application
         run: |
-          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:latest
-          kubectl wait pods -n default -l run=rock-paper-scissors-app --for condition=Ready --timeout=90s
-          kubectl get pods -o wide --all-namespaces --watch
-          kubectl expose service rock-paper-scissors-app --port=5000
+          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:main
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 5000
       
       - name: Test Deployment
         run: |
