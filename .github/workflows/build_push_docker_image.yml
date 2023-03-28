@@ -1,0 +1,91 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    types:
+      - 'closed'
+    branches:
+      - 'main'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Extract metadata (tags, labels) for Docker
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          buildkitd-flags: --debug
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: ${{ github.repository }}:${{ github.sha }}
+          
+      - name: Run Docker Image Test
+        run: |
+          docker run -d -i -t --rm --name rock-paper-scissors-app -p 8080:5000 ${{ github.repository }}:${{ github.sha }}        
+      
+          curl --silent --fail --max-time 3 --connect-timeout 10 --max-time 10 --connect-timeout 30 http://127.0.0.1:5000/health  > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "health test passed!"
+          else
+            echo "health test failed, exiting..."
+            cleanup
+            exit 1
+          fi
+          
+          curl --silent --fail --max-time 3 --connect-timeout 10 --max-time 10 --connect-timeout 30 -X POST -H 'Content-Type: application/json' http://127.0.0.1:5000/rps -d '{"move": "Rock"}' > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "POST request passed!"
+          else
+            echo "POST request failed."
+            cleanup
+            exit 1
+          fi
+      
+      - name: Build and Push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+      
+     
