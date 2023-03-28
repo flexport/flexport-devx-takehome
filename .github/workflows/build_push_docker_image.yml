@@ -65,6 +65,6 @@ jobs:
       
       - name: Run Docker Image Test
         run: |
-          docker run -d -i -t --rm --name rock-paper-scissors-app -p 8080:5000 ${{ env.REGISTRY }}/${{ github.repository }}:latest
-      
+          docker run -d -i -t --rm --name rock-paper-scissors-app -p 8080:5000 ${{ env.REGISTRY }}/${{ github.repository }}
+    
      
