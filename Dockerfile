@@ -1,5 +1,5 @@
 #FROM scratch
-FROM python:3.9.16-slim-bullseye
+FROM ubunutu:16.04
 
 WORKDIR /rps_app
 
