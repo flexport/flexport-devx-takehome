@@ -39,6 +39,7 @@ jobs:
         run: |
           kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:main
           kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl get pods -o wide --all-namespaces --watch
           kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 5000
       
       - name: Test Deployment on Server
