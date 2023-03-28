@@ -37,7 +37,7 @@ jobs:
       
       - name: Deploy Application
         run: |
-          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:latest
+          kubectl create deployment rock-paper-scissors-app --image=${{ env.REGISTRY }}/${{ github.repository }}:main
           kubectl cluster-info
           kubectl wait pods -n default -l run=rock-paper-scissors-app --for condition=Ready --timeout=90s
           kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 6000
