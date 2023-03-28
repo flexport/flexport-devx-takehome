@@ -1,5 +1,5 @@
 #FROM scratch
-FROM ubunutu:16.04
+FROM python
 
 WORKDIR /rps_app
 
