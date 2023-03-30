@@ -16,5 +16,5 @@ def test_psr():
     if "USER" in os.environ:
         res = requests.post(os.environ["ENDPOINT"] + "/rps", json={"move": "rock"})
         assert res.status_code == 200
-    else: 
+    else:
         pass
