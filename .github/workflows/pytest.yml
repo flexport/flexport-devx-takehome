@@ -41,16 +41,16 @@ jobs:
           pip install ruff pytest pytest-cov 
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       
-      - name: Analyze Code with black
+      - name: Analyze Code with Black
         run: |
           python -m black --check src/ tests/
       
-      - name: Analyze Code with black
+      - name: Analyze Code with Pylint
         run: |
           python -m pylint --fail-under=9.7 `find -regextype egrep -regex '(.*.py)$'` |
           tee pylint.txt
       
-      - name: Upload pylint.txt as artifact
+      - name: Upload pylint.txt as Artifact
         uses: actions/upload-artifact@v2
         with:
           name: pylint report
@@ -80,9 +80,9 @@ jobs:
             exit $status
           fi
           
-      - name: Running pytest
+      - name: Running Pytest Coverage
         run: |
-          PYTHONPATH="${PYTHONPATH}:./src" python -m pytest -v tests/functional tests/unit --cov
+          PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/functional tests/unit --cov
       
-      - name: Upload coverage reports to Codecov with GitHub Action
+      - name: Upload Coverage Reports to Codecov
         uses: codecov/codecov-action@v3
