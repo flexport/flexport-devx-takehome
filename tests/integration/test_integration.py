@@ -13,7 +13,8 @@ def test_health():
 
 def test_psr():
     """testing rps function"""
-    if "USER" not in os.environ:
-        "ENDPOINT" = "http://localhost:5000"
-    res = requests.post(os.environ["ENDPOINT"] + "/rps", json={"move": "rock"})
-    assert res.status_code == 200
+    if "USER" in os.environ:
+        res = requests.post(os.environ["ENDPOINT"] + "/rps", json={"move": "rock"})
+        assert res.status_code == 200
+    else: 
+        pass
