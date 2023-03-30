@@ -82,8 +82,7 @@ jobs:
           
       - name: Running pytest
         run: |
-          PYTHONPATH="${PYTHONPATH}:./src" python -m pytest -v tests/functional tests/unit --cov --cov-report
-          coverage report
+          PYTHONPATH="${PYTHONPATH}:./src" python -m pytest -v tests/functional tests/unit --cov
       
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
