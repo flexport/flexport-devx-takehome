@@ -59,7 +59,7 @@ jobs:
           
       - name: Running pytest Coverage
         run: |
-          PYTHONPATH="${PYTHONPATH}:./src" python -m pytest -v tests/integration --cov
+          PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/integration --cov
       
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
