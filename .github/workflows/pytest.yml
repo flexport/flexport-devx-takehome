@@ -1,0 +1,88 @@
+name: Set Up Python, Analyze Code, and Run pytest
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    types:
+      - 'closed'
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    name: Set Up Project
+    
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+
+    environment: dev
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: 'pip'
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install pip --upgrade
+          pip install black
+          pip install pylint
+          pip install requests
+          pip install ruff pytest pytest-cov 
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Analyze Code with Black
+        run: |
+          python -m black --check src/ tests/
+      
+      - name: Analyze Code with Pylint
+        run: |
+          python -m pylint --fail-under=9.7 `find -regextype egrep -regex '(.*.py)$'` |
+          tee pylint.txt
+      
+      - name: Upload pylint.txt as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: pylint report
+          path: pylint.txt
+      
+      
+      - name: Unit Test and Functional Test
+        run: |
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit 2>&1 | tee tests.log
+          python -m black --check src/
+          status=${PIPESTATUS[0]}
+          if [ $status -eq 0 ]; then
+            echo 'pytest unit test passed!'
+          else
+            echo 'pytest unit test failed, exiting...'
+            cleanup
+            exit $status
+          fi
+        
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional 2>&1 | tee tests.log
+          status=${PIPESTATUS[0]}
+          if [ $status -eq 0 ]; then
+            echo 'pytest functional test passed!'
+          else
+            echo 'pytest functional test failed, exiting...'
+            cleanup
+            exit $status
+          fi
+          
+      - name: Running Pytest Coverage
+        run: |
+          PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/functional tests/unit --cov
+      
+      - name: Upload Coverage Reports to Codecov
+        uses: codecov/codecov-action@v3
