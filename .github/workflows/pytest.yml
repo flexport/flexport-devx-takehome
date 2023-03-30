@@ -16,12 +16,11 @@ jobs:
   build:
     name: Set Up Project
     
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.7", "3.8", "3.9"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     environment: dev
     
@@ -42,6 +41,7 @@ jobs:
           pip install pylint
           pip install ruff pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e
       
       - name: Analyze Code with black
         run: |
