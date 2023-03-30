@@ -57,11 +57,11 @@ jobs:
         run: |
           kind delete cluster --name test-cd-rock-paper-scissors-app
           
-      - name: Running pytest Coverage
+      - name: Running pPytest Coverage
         run: |
           PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/integration --cov
       
-      - name: Upload coverage reports to Codecov with GitHub Action
+      - name: Upload Coverage Reports to Codecov
         uses: codecov/codecov-action@v3
       
           
