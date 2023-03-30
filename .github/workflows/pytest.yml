@@ -40,8 +40,7 @@ jobs:
           python -m pip install pip --upgrade --disable-pip-version-check
           pip install black
           pip install pylint
-          pip install ruff pytest
-          python -m pip install pytest-cov
+          pip install ruff pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       
       - name: Analyze Code with black
@@ -83,11 +82,9 @@ jobs:
             exit $status
           fi
           
-      - name: Build coverage file
+      - name: Running pytest
         run: |
-          pytest --cache-clear --cov=app ./src > pytest-coverage.txt
-          
-      - name: Comment coverage
-        uses: coroo/pytest-coverage-commentator@v1.0.2
+          pytest -v  --cov --cov-report=xml --cov-report=xml:coverage_report.xml
         
-        
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
