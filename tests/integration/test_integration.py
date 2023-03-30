@@ -13,5 +13,8 @@ def test_health():
 
 def test_psr():
     """testing rps function"""
-    res = requests.post(os.environ.get("ENDPOINT", "http://localhost:5000") + "/rps", json={"move": "rock"})
+    res = requests.post(
+        os.environ.get("ENDPOINT", "http://localhost:5000") + "/rps",
+        json={"move": "rock"},
+    )
     assert res.status_code == 200
