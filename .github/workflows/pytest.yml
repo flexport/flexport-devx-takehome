@@ -78,3 +78,14 @@ jobs:
             exit $status
           fi
           
+      - name: oryks code coverage action
+        id: selftest
+        uses: twyle/oryks-code-coverage@v0.2.0
+        with:
+          codedirectory: src/
+          testdirectory: tests/
+
+      - name: action output
+        run: |
+          echo "${{ steps.selftest.outputs.testcoverage }}"
+          
