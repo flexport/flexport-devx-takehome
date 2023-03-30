@@ -7,14 +7,14 @@ import requests, os
 
 def test_health():
     """testing health check function"""
-    res = requests.get(os.environ.get("ENDPOINT", "http://localhost:7000") + "/health")
+    res = requests.get(os.environ.get("ENDPOINT", "http://127.0.0.0") + "/health")
     assert res.content == b"OK"
 
 
 def test_psr():
     """testing rps function"""
     res = requests.post(
-        os.environ.get("ENDPOINT", "http://localhost:7000") + "/rps",
+        os.environ.get("ENDPOINT", "http://127.0.0.0") + "/rps",
         json={"move": "rock"},
     )
     assert res.status_code == 200
