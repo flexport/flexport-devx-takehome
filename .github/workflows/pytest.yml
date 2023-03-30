@@ -39,7 +39,7 @@ jobs:
           python -m pip install pip --upgrade --disable-pip-version-check
           pip install black
           pip install pylint
-          pip install ruff pytest pytest-cov
+          pip install ruff pytest pytest-cov request
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       
       - name: Analyze Code with black
