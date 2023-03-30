@@ -10,4 +10,3 @@ from rock_paper_scissors.app import app
 def apply_migrations():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     os.environ["ENDPOINT"] = "http://localhost:5000"
-
