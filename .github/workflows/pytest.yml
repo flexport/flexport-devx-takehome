@@ -15,10 +15,14 @@ on:
 jobs:
   build:
     name: Set Up Project
+    
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
-    
-    runs-on: ubuntu-latest
+      matrix:
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+        python-version: ["3.7", "3.8", "3.9"]
+
     environment: dev
     
     steps:
@@ -28,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
           cache: 'pip'
       
       - name: Install Dependencies
@@ -37,6 +41,7 @@ jobs:
           pip install black
           pip install pylint
           pip install ruff pytest
+          python -m pip install --upgrade coverage[toml]
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       
       - name: Analyze Code with black
@@ -78,14 +83,20 @@ jobs:
             exit $status
           fi
           
-      - name: oryks code coverage action
-        id: selftest
-        uses: twyle/oryks-code-coverage@v0.2.0
+      - name: Download coverage data.
+        uses: actions/download-artifact@v2
         with:
-          codedirectory: src/
-          testdirectory: tests/
+          name: coverage-data
 
-      - name: action output
+      - name: Combine coverage & fail if it's <100%.
         run: |
-          echo "${{ steps.selftest.outputs.testcoverage }}"
-          
+          python -m coverage combine
+          python -m coverage html --skip-covered --skip-empty
+          python -m coverage report --fail-under=100          
+
+      - name: Upload HTML report if check failed.
+        uses: actions/upload-artifact@v2
+        with:
+          name: html-report
+          path: htmlcov
+        if: ${{ failure() }}
