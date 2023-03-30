@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          pip install ruff pytest
+          pip install ruff pytest pytest-cov 
     
       - uses: actions/checkout@v3
       - name: Create k8s Kind Cluster
@@ -56,4 +56,12 @@ jobs:
         if: always()
         run: |
           kind delete cluster --name test-cd-rock-paper-scissors-app
+          
+      - name: Running pytest Coverage
+        run: |
+          PYTHONPATH="${PYTHONPATH}:./src" python -m pytest -v tests/integration --cov
+      
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
+      
           
