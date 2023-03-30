@@ -7,7 +7,7 @@ import requests, os
 
 def test_health():
     """testing health check function"""
-    res = requests.get(os.environ("ENDPOINT") + "/health")
+    res = requests.get(os.environ["ENDPOINT"] + "/health")
     assert res.content == b"OK"
 
 
