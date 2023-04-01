@@ -35,9 +35,10 @@ def health():
     """Returns OK"""
     return "OK"
 
-@app.route("/rps", methods = ['POST'])
+
+@app.route("/rps", methods=["POST"])
 def rps():
-    """"RPS function"""
+    """ "RPS function"""
     # Create number to choice mapping
     mapping = ["Rock", "Paper", "Scissors"]
 
@@ -56,5 +57,5 @@ def rps():
         result = f"You win, {move} beats {mapping[pc_choice]}"
 
     return json.dumps(
-        {'result': result,'game_result': game_result,'pc_choice': pc_choice}
+        {"result": result, "game_result": game_result, "pc_choice": pc_choice}
     )
