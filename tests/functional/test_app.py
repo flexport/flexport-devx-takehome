@@ -1,3 +1,7 @@
+"""
+Test application. This is a functional test to test the application main module RPS.
+"""
+
 import json
 
 from rock_paper_scissors.app import app
@@ -11,6 +15,6 @@ def test_rps():
 
     with app.test_client() as test_client:
         response = test_client.post('/rps',
-                                    data=json.dumps(dict(move='Rock')),
+                                    data=json.dumps({"move": 'Rock'}),
                                     content_type='application/json')
         assert response.status_code == 200
