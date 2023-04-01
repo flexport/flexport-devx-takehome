@@ -24,4 +24,4 @@ jobs:
       uses: psf/black@stable
     - name: Running All Tests
       run: |
-        PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/functional tests/unit --cov
+        PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/functional tests/unit --cov-report term-missing --cov
