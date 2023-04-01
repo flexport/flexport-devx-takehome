@@ -24,4 +24,4 @@ jobs:
       uses: psf/black@stable
     - name: Running Unit Tests
       run: |
-        pytest tests/unit --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit --cov-report term --cov=rock_paper_scissors
