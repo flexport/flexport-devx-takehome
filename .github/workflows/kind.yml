@@ -1,0 +1,38 @@
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+      - name: Testing
+        run: |
+          kubectl wait nodes --for condition=Ready --all
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+      
+      - name: Deploy Application
+        run: |
+          kubectl create deployment rock-paper-scissors-app --image=ghcr.io/user/app:latest
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/rock-paper-scissors-app --type=NodePort --port 8080
+      
+      - name: Test Deployment on Server
+        run: |
+          export NODE_PORT=$(kubectl get services/rock-paper-scissors-app -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
+          kubectl describe services/rock-paper-scissors-app
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec -ti $POD_NAME -- curl localhost:8080/version
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd-rock-paper-scissors-app
