@@ -22,6 +22,6 @@ jobs:
         pylint $(git ls-files '*.py')
     - name: Analyzing the code with black
       uses: psf/black@stable
-    - name: Running Unit Tests
+    - name: Running All Tests
       run: |
-        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit --cov-report term --cov=rock_paper_scissors
+        PYTHONPATH="${PYTHONPATH}:./src" ENDPOINT=http://localhost:5000 python -m pytest -v tests/functional tests/unit --cov
