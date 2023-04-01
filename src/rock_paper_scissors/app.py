@@ -13,10 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-import json
-
-
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 from .rps import rock_paper_scissors
 
@@ -56,6 +53,6 @@ def rps():
     elif game_result == 1:
         result = f"You win, {move} beats {mapping[pc_choice]}"
 
-    return json.dumps(
+    return jsonify(
         {"result": result, "game_result": game_result, "pc_choice": pc_choice}
     )
