@@ -25,7 +25,7 @@ def test_rps():
 
 
     with app.test_client() as test_client:
-        response = test_client.post("/rps", 
+        response = test_client.post("/rps",
                                     data=json.dumps({"move": "Rock"}),
                                     content_type="application/json"
         )
