@@ -1,0 +1,17 @@
+name: lint_and_execute_unit_test
+
+on: [push]
+
+jobs:
+
+  format_check:
+    steps:
+      run: black --diff .
+
+  lint_code:
+    steps:
+      run: find /Users/ashwinmeenameiyappan/learning_git/flexport-devx-takehome -name "*.py" -exec pylint {} +
+
+  code_coverage:
+    steps:
+      run: PYTHONPATH="${/Users/ashwinmeenameiyappan/learning_git/flexport-devx-takehome}:./src" coverage run -m pytest
