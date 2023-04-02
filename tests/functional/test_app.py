@@ -32,7 +32,6 @@ def test_rps_correct_cases():
     """
     Testing the /rps endpoint for all the possible cases for "Rock", "Paper" and "Scissors" game
     """
-
     with app.test_client() as test_client:
         mapping = ["Rock", "Paper", "Scissors"]
 
