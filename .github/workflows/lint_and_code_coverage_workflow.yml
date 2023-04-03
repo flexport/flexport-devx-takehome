@@ -19,12 +19,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-     - name: check black exists
+      - name: check black exists
        run:
          chmod +x check_black.sh
          ./check_black.sh
 
-     - name: check code formatting
+      - name: check code formatting
         run: black --diff .
 
   lint_code:
