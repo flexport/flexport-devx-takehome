@@ -14,10 +14,17 @@ jobs:
           chmod +x install_dependencies.sh
           ./install_dependencies.sh
 
-      - name: print all dependencies
+      - name: debug info
         run: |
           black --version
           pytest --version
-          flask --verison
-          pylint --verison
+          flask --version
+          pylint --version
           coverage --version
+          pwd
+      - name: check formatting
+        run: black --diff .
+      - name: lint the code
+        run: find ./  -name "*.py" -exec pylint {} +
+      - name: code coverage
+        run: PYTHONPATH="./src" coverage run -m pytest
