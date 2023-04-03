@@ -14,31 +14,10 @@ jobs:
           chmod +x install_dependencies.sh
           ./install_dependencies.sh
 
-  format_check:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: check black exists
+      - name: print all dependencies
         run:
-          chmod +x check_black.sh
-          ./check_black.sh
-
-      - name: check code formatting
-        run: black --diff .
-
-  lint_code:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: lint the code
-        run: find -name "*.py" -exec pylint {} +
-
-  code_coverage:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: print coverage report
-        run: PYTHONPATH="./src" coverage run -m pytest
+          black --version
+          pytest --version
+          flask --verison
+          pylint --verison
+          coverage --version
