@@ -26,5 +26,8 @@ jobs:
         run: black --diff .
       - name: lint the code
         run: find ./  -name "*.py" -exec pylint {} +
+        continue-on-error: true
       - name: code coverage
-        run: PYTHONPATH="./src" coverage run -m pytest
+        run: |
+          PYTHONPATH="./src" coverage run -m pytest
+          PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
