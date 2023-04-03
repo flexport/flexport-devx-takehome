@@ -4,14 +4,24 @@ on: [push]
 
 jobs:
 
+  install_dependecies:
+    runs-on: macos-latest
+    steps:
+      run:
+        chmod +x install_dependencies.sh
+        ./install_dependencies.sh
+
   format_check:
+    runs-on: macos-latest
     steps:
       run: black --diff .
 
   lint_code:
+    runs-on: macos-latest
     steps:
       run: find -name "*.py" -exec pylint {} +
 
   code_coverage:
+    runs-on: macos-latest
     steps:
       run: PYTHONPATH="./src" coverage run -m pytest
