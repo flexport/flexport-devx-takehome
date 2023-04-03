@@ -13,5 +13,5 @@ sudo python3 get-pip.py
 pip install --upgrade pip
 
 # Install all dependencies on remote server
-pip install flask==2.2.3 pytest==7.2.2 black==23.3.0 pylint==2.17.1 coverage==7.2.2
+python3 pip install flask==2.2.3 pytest==7.2.2 black==23.3.0 pylint==2.17.1 coverage==7.2.2
 
