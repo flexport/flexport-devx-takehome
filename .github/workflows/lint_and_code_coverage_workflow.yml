@@ -7,21 +7,33 @@ jobs:
   install_dependecies:
     runs-on: macos-latest
     steps:
-      run:|
-        chmod +x install_dependencies.sh |
-        ./install_dependencies.sh
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        run:
+          chmod +x install_dependencies.sh
+          ./install_dependencies.sh
 
   format_check:
     runs-on: macos-latest
     steps:
-      run: black --diff .
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: check code formatting
+        run: black --diff .
 
   lint_code:
     runs-on: macos-latest
     steps:
-      run: find -name "*.py" -exec pylint {} +
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: lint the code
+        run: find -name "*.py" -exec pylint {} +
 
   code_coverage:
     runs-on: macos-latest
     steps:
-      run: PYTHONPATH="./src" coverage run -m pytest
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: print coverage report
+        run: PYTHONPATH="./src" coverage run -m pytest
