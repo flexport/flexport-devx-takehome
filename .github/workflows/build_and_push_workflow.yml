@@ -1,0 +1,110 @@
+# Name of the workflow
+
+name: Build and Deploy
+
+
+# Trigger the workflow on a push event to the main or dev branch
+on:
+  push:
+    branches:
+      - main
+      - dev
+# Define jobs for the workflow
+
+jobs:
+  build-and-push:
+    # Use the latest Ubuntu image as the build environment
+    runs-on: ubuntu-latest
+
+    # Define the steps for the job
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Docker Hub and ghcr using secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # Docker Hub username stored as a secret
+          password: ${{ secrets.DOCKER_PASSWORD }} # Docker Hub password stored as a secret
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3: Build the Docker image and tag it with the git commit hash and ghcr.io registry
+      - name: Build and tag Docker image
+        run: |
+          # Build the Docker image and tag it with the git commit hash
+          docker build -t patrickgoulding/flexport-takehome:${{ github.sha }} .
+
+          # Tag the Docker image for the ghcr.io registry
+          docker tag patrickgoulding/flexport-takehome:${{ github.sha }} ghcr.io/${{ github.actor }}/${{ github.repository }}:${{ github.sha }}
+
+      # Step 4: Push the Docker image to the registry
+      - name: Push Docker image to registry
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: |
+            patrickgoulding/flexport-takehome:${{ github.sha }}
+            ghcr.io/${{ github.actor }}/${{ github.repository }}:${{ github.sha }}
+
+  kind:
+    # This action depends on the build-and-push action to complete successfully
+    needs: build-and-push
+    runs-on: ubuntu-latest # This action will run on an Ubuntu machine in a GitHub Actions workflow
+    steps:
+      # Step 1: Checkout the code from the repository
+      - uses: actions/checkout@v3
+      # Step 2: creates a Kubernetes kind cluster using the Helm Kind action
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+      - name: Testing k8s cluster # This step tests the Kubernetes cluster by running some kubectl commands and checking the environment
+        run: |
+          kind create cluster --name rps-flexport  # Create a Kubernetes cluster named rps-flexport using kind
+          kubectl wait nodes --for condition=Ready --all  # Wait for all Kubernetes nodes to become ready
+          kubectl cluster-info  # Print the cluster information
+          kubectl get pods -n kube-system  # Get all pods in the kube-system namespace
+          echo "current-context:" $(kubectl config current-context)  # Print the current context for kubectl
+          echo "environment-kubeconfig:" ${KUBECONFIG}  # Print the environment variable KUBECONFIG
+      - name: Deploy Application via kind # This step deploys the application to the Kubernetes cluster
+        run: |
+          docker pull ghcr.io/${{ github.actor }}/${{ github.repository }}:${{ github.sha }}  # Pull the Docker image from GitHub Packages
+          kind load docker-image ghcr.io/${{ github.actor }}/${{ github.repository }}:${{ github.sha }} --name rps-flexport  # Load the Docker image into the kind cluster
+          kubectl create deployment flexport-takehome --image=ghcr.io/${{ github.actor }}/${{ github.repository }}:${{ github.sha }}  # Create a Kubernetes deployment
+          kubectl wait pods --for condition=Ready --timeout=90s --all  # Wait for all pods to become ready
+          kubectl expose deployment/flexport-takehome --type=NodePort --port 5000  # Expose the deployment to the host network using NodePort
+      - name: Test Deployment # This step tests the deployed application
+        run: |
+          export NODE_PORT=$(kubectl get services/flexport-takehome -o go-template='{{(index .spec.ports 0).nodePort}}')  # Get the node port for the deployed service
+          echo NODE_PORT=${NODE_PORT}  # Print the node port
+          kubectl describe services/flexport-takehome  # Print information about the service
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')  # Get the name of the pod running the deployment
+          export ENDPOINT=$(kubectl describe services/flexport-takehome | awk '/Endpoints/ {print $2}')  # Get the endpoint for the service
+          echo POD_NAME=${POD_NAME}  # Print the pod name
+          echo ENDPOINT=${ENDPOINT}  # Print the endpoint
+          kubectl port-forward $POD_NAME 5000:5000 &  # Forward the local port to the Kubernetes pod
+          sleep 5  # Wait for the port forwarding to start
+          wget http://localhost:5000/health -O -  # Test the health endpoint for the deployed service
+      - name: Test Deployed Endpoints and coverage # This step runs integration tests against the deployed endpoints
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          export ENDPOINT=$(kubectl describe services/flexport-takehome | awk '/Endpoints/ {print $2}')  # Get the endpoint for the service
+          export APP_URL=http://${ENDPOINT}
+          echo APP_URL=${APP_URL}
+          # wget ${APP_URL}/health -O -
+          PYTHONPATH="${PYTHONPATH}:./src" coverage run --source=./src -m pytest -m "not integration" && coveralls
+      - name: Cleanup
+        if: always() # This step will always run, regardless of the success/failure of previous steps
+        run: |
+          kind delete cluster --name rps-flexport # cleans up and deletes the rps-flexport cluster created earlier
+

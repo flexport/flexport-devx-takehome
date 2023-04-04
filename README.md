@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/pgoulding/flexport-devx-takehome/badge.svg?branch=kind-v2)](https://coveralls.io/github/pgoulding/flexport-devx-takehome?branch=kind-v2)
 # Flexport Productivity Infrastructure Take Home
 
 This repository contains a python backend service. This service provides a simple REST api for
