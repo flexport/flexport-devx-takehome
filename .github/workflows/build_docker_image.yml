@@ -8,6 +8,7 @@ on:
       - completed
 env:
   IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
+  GITHUB_USERNAME: ashwin0794
 
 jobs:
    build-test-publish:
@@ -38,6 +39,7 @@ jobs:
 
       - name: Test Docker image
         run: |
+          docker login ghcr.io -u ${{ env.GITHUB_USERNAME }}  -p ${{ secrets.CR_PAT }}
           docker pull ${{ env.IMAGE_NAME }}
           docker run -d --rm ${{ env.IMAGE_NAME }} pytest tests
 
