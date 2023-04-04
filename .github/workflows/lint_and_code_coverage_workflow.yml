@@ -4,11 +4,11 @@ on: [push]
 
 jobs:
 
-  lint_and_execute_dependencies:
+  lint_and_execute_tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup python environment
         uses: actions/setup-python@v2
         with:
@@ -27,7 +27,9 @@ jobs:
           coverage --version
           pwd
       - name: check formatting
-        run: black --diff .
+        run: |
+          black --diff .
+          black .
       - name: lint the code
         run: find ./  -name "*.py" -exec pylint {} +
         continue-on-error: true
