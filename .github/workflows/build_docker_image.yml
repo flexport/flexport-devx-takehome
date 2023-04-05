@@ -56,9 +56,9 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}
           registry: ghcr.io
-        secrets:
-          username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+          secrets:
+            username: ${{ github.actor }}
+            password: ${{ secrets.CR_PAT }}
 
       - name: Test Docker image after push
         run: |
