@@ -26,13 +26,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo systemctl enable docker
 
       - name: Build and test docker image
         run: |
+          pwd
+          docker --version
           docker build -t ashwin-flask-app:latest .
           docker run --rm ashwin-flask-app:latest pytest tests/
 
