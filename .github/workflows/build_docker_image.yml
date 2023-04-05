@@ -8,7 +8,7 @@ on:
       - completed
 env:
   IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
-
+  GITHUB_USERNAME: ashwin0794
 jobs:
    build-test-publish:
     runs-on: ubuntu-latest
