@@ -24,11 +24,11 @@ jobs:
         with:
           context: .
           push: false
-          tags: rock_paper_scissors:${{ github.event.head_commit.message }}:${{ github.sha }}
+          tags: rock_paper_scissors:${{ github.sha }}
 
       - name: Run Tests
         run: |
-          docker run --rm -d -p 8080:5000 rock_paper_scissors:${{ github.sha }}
+          docker run --rm -d -p 8080:5000 rock_paper_scissors:q${{ github.sha }}
           sleep 5s 
           curl --fail --silent http://localhost:8080/health > /dev/null
           if [ $? -eq 0 ]; then
