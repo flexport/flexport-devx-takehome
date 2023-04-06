@@ -1,5 +1,11 @@
 name: "Testing rock_paper_scissors on k8s clusterlocally using Kind"
-on: [pull_request, push]
+
+on:
+  workflow_run:
+    workflows:
+      - "Build docker Image and push to repo"
+    types:
+      - completed
 
 jobs:
   kind:
