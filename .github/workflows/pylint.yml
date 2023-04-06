@@ -30,9 +30,11 @@ jobs:
     - name: functional tests
       run: |
         PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
-    - name: coverage analysis
+    - name: coverage analysis and report for unit test
       run: |
         PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/unit
+        coverage report --include="src/*"
+    - name: coverage analysis and report for unit test
+      run: |
         PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/functional
-    - name: coverage report
-      run: coverage report -m
+        coverage report --include="src/*"
