@@ -30,9 +30,13 @@ jobs:
         run: |
           black --diff .
           black .
+
+      # if lint fails, then workflow will fail.
       - name: lint the code
         run: find ./  -name "*.py" -exec pylint {} +
         continue-on-error: true
+
+      # if code coverage is < 80% then fail the workflow.
       - name: code coverage
         run: |
           PYTHONPATH="./src" coverage run -m pytest

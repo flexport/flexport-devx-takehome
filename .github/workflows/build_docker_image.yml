@@ -38,6 +38,8 @@ jobs:
           docker --version
           docker build -t ashwin-flask-app:latest .
           docker run --rm ashwin-flask-app:latest pytest tests/
+          # Need to modify the yml here
+          # If testing the docker image fails or not 100%, then fail the workflow and print the reason.
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -49,6 +51,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
+      # if docker push fails, then fail the workflow
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -58,10 +61,3 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.CR_PAT }}
-
-      - name: Test Docker image after push
-        run: |
-          docker login ghcr.io -u ${{ env.GITHUB_USERNAME }}  -p ${{ secrets.CR_PAT }}
-          docker pull ${{ env.IMAGE_NAME }}
-          docker images
-          docker run -d --rm ${{ env.IMAGE_NAME }} pytest tests
