@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker run --rm -d -p 8080:5000 rock_paper_scissors:q${{ github.sha }}
+          docker run --rm -d -p 8080:5000 rock_paper_scissors:${{ github.sha }}
           sleep 5s 
           curl --fail --silent http://localhost:8080/health > /dev/null
           if [ $? -eq 0 ]; then
