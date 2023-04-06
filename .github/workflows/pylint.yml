@@ -1,4 +1,4 @@
-name: lint and unit tests
+name: lint and tests
 
 on: [push]
 
@@ -30,3 +30,9 @@ jobs:
     - name: functional tests
       run: |
         PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
+    - name: coverage analysis
+      run: |
+        PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/unit
+        PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/functional
+    - name: coverage report
+      run: coverage report -m
