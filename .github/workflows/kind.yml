@@ -17,7 +17,12 @@ jobs:
       - name: Testing
         run: |
           kubectl wait nodes --for condition=Ready --all
+          echo "wait nodes done"
           kubectl cluster-info
+          echo "after cluster-info"
           kubectl get pods -n kube-system
+          echo "after get pods"
+          kubectl get nodes
+          echo "after get nodes"
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
