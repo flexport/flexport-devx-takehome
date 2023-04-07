@@ -25,23 +25,18 @@ jobs:
       - name: Testing
         run: |
           kubectl wait nodes --for condition=Ready --all
-          echo "wait nodes done"
           kubectl cluster-info
-          echo "after cluster-info"
           kubectl get pods -n kube-system
-          echo "after get pods"
           kubectl get nodes
-          echo "after get nodes"
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${{ env.KUBECONFIG }}
       - name: Deploy Application
         run: |
+          docker pull ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
           kubectl create deployment kubernetes-bootcamp --image=ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
-          echo "create deploy done"
           kubectl get pods
-          echo "after get pods"
+          kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
+          kubectl logs $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
           kubectl get deployments
-          echo "after get deployments"
-          kubectl wait pods --for condition=Ready --all
-          echo "wait pods done"
+          kubectl wait pods --for condition=Ready --all --timeout=5m
           kubectl expose deployment/kubernetes-bootcamp --type=NodePort --port 8080
