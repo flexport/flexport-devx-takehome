@@ -7,7 +7,7 @@ on:
     types:
       - completed
 env:
-  IMAGE: ashwin-flask-app
+  IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
 
 jobs:
   kind:
@@ -26,7 +26,7 @@ jobs:
           echo "environment-kubeconfig:" ${{ env.KUBECONFIG }}
       - name: Deploy Application
         run: |
-          kubectl create deployment kubernetes-bootcamp --image=ghcr.io/${{ github.repository }}/${{ env.IAMGE }}:latest
+          kubectl create deployment kubernetes-bootcamp --image=${{ env.IMAGE_NAME }}
           kubectl get pods
           kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
           kubectl get deployments
