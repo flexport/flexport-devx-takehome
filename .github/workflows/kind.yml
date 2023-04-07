@@ -36,13 +36,14 @@ jobs:
           kubectl get pods
           echo "======= PRINTING POD NAME =========="
           echo $pod_name
-          kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}'
-          which jq
-          container_name=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}' | jq -r .[0])
-          echo "------ PRINTING CONTAINER NAME -------------"
-          echo $container_name
+          #kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}'
+          kubectl get pod $pod_name -o json
+          #jq --version
+          #container_name=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}' | jq -r .[0])
+          #echo "------ PRINTING CONTAINER NAME -------------"
+          #echo $container_name
           echo "------- PRINTING POD LOGS ------"
-          kubectl logs $pod_name $container_name
+          kubectl logs $pod_name ashwin-flask-app
           kubectl get deployments
           kubectl wait pods --for condition=Ready --all --timeout=90s
           kubectl expose deployment/ashwin-rps-app --type=NodePort --port 5000
