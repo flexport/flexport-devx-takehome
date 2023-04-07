@@ -36,6 +36,8 @@ jobs:
           kubectl get pods
           echo "======= PRINTING POD NAME =========="
           echo $pod_name
+          kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}'
+          which jq
           container_name=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}' | jq -r .[0])
           echo "------ PRINTING CONTAINER NAME -------------"
           echo $container_name
