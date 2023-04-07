@@ -62,5 +62,9 @@ jobs:
           echo "------- PRINTING POD LOGS ------"
           #kubectl logs $pod_name ashwin-flask-app
           #kubectl get deployments
+          sleep 90
+          kubectl get pods
+          kubectl describe pod $pod_name
+          kubectl logs $pod_name
           kubectl wait pods --for condition=Ready --all --timeout=90s
           kubectl expose deployment/ashwin-rps-app --type=NodePort --port 5000
