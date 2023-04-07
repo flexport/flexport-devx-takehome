@@ -29,15 +29,15 @@ jobs:
           kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
           kubectl get pods
           echo "------ DESCRIBING POD --------"
-          kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
-          pod_name=$(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
+          #kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
+          kubectl describe pod
+          pod_name=$(kubectl get pods | tail -n1 | awk '{print $1}')
           echo "-------- GET PODS --------------"
           kubectl get pods
           echo "======= PRINTING POD NAME =========="
           echo $pod_name
           echo "------- PRINTING POD LOGS ------"
-          kubectl logs -h
-          kubectl logs $(kubectl get pods)
+          kubectl logs $pod_name
           kubectl get deployments
           kubectl wait pods --for condition=Ready --all --timeout=90s
           kubectl expose deployment/ashwin-rps-app --type=NodePort --port 5000
