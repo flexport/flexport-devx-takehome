@@ -30,20 +30,8 @@ jobs:
         run: |
           docker run --rm -d -p 8080:5000 rock_paper_scissors:${{ github.sha }}
           sleep 5s 
-          curl --fail --silent http://localhost:8080/health > /dev/null
-          if [ $? -eq 0 ]; then
-            echo "health test succeeded"
-          else
-            echo "health test failed"
-            exit 1
-          fi
-          curl --fail --silent -X POST -H 'Content-Type: application/json' http://127.0.0.1:8080/rps -d '{"move": "Rock"}' > /dev/null
-          if [ $? -eq 0 ]; then
-            echo "POST test succeeded"
-          else
-            echo "POST failed"
-            exit 1
-          fi
+          ENDPOINT=http://localhost:8080 pytest tests/integration
+
          
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9

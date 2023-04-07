@@ -37,4 +37,4 @@ jobs:
     - name: coverage analysis and report for unit test
       run: |
         PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/functional
-        coverage report --include="src/*"
+        coverage report -m --include="src/*"
