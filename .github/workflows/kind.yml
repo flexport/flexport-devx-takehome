@@ -7,7 +7,8 @@ on:
     types:
       - completed
 env:
-  IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   kind:
@@ -25,11 +26,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3-pip
           sudo pip install pytest==7.2.2
-          docker pull ${{ env.IMAGE_NAME }}
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           docker images
-          docker run -d -p 5000 ${{ env.IMAGE_NAME }}
+          docker run -d -p 5000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           docker ps
-          docker run --rm ${{ env.IMAGE_NAME }} pytest tests/
+          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} pytest tests/
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
@@ -43,7 +44,7 @@ jobs:
           echo "environment-kubeconfig:" ${{ env.KUBECONFIG }}
       - name: Deploy Application
         run: |
-          kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
+          kubectl create deployment ashwin-rps-app --image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           kubectl get pods
           #echo "------ DESCRIBING POD --------"
           #kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
