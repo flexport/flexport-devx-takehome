@@ -36,7 +36,6 @@ jobs:
           kubectl create deployment kubernetes-bootcamp --image=ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
           kubectl get pods
           kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
-          kubectl logs $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
           kubectl get deployments
           kubectl wait pods --for condition=Ready --all --timeout=5m
           kubectl expose deployment/kubernetes-bootcamp --type=NodePort --port 8080
