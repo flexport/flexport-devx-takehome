@@ -30,9 +30,11 @@ jobs:
           kubectl get pods
           echo "------ DESCRIBING POD --------"
           kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
-          pod_name=$(kubectl get pods)
+          pod_name=$(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
+          echo "======= PRINTING POD NAME =========="
           echo $pod_name
           echo "------- PRINTING POD LOGS ------"
+          kubectl logs -h
           kubectl logs $pod_name
           kubectl get deployments
           kubectl wait pods --for condition=Ready --all --timeout=90s
