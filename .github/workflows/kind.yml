@@ -38,6 +38,6 @@ jobs:
         run: |
           kubectl create deployment kubernetes-bootcamp --image=ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
           echo "create deploy done"
-          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl wait pods --for condition=Ready --all
           echo "wait pods done"
           kubectl expose deployment/kubernetes-bootcamp --type=NodePort --port 8080
