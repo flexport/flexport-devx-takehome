@@ -41,6 +41,7 @@ jobs:
         uses: helm/kind-action@v1.4.0
       - name: Testing
         run: |
+          kind create cluster --name ashwin-rps-cluster
           kubectl wait nodes --for condition=Ready --all
           kubectl cluster-info
           kubectl get pods -n kube-system
@@ -51,7 +52,7 @@ jobs:
         run: |
           #git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           #kubectl create deployment ashwin-rps-app --image=${{ env.REGISTRY }}/$git_repo
-          kind load docker-image ${{ env.IMAGE_NAME }} --name rps-flexport
+          kind load docker-image ${{ env.IMAGE_NAME }} --name ashwin-rps-cluster
           kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
           kubectl get pods
           #echo "------ DESCRIBING POD --------"
