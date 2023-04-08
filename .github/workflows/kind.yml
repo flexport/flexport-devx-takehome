@@ -6,9 +6,13 @@ on:
       - "Build docker Image and push to repo"
     types:
       - completed
+
+GIT_REPO="$( {{ github.repository }} | tr '[:upper:]' '[:lower:]')"
+echo $GIT_REPO
+
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: $GIT_REPO
 
 jobs:
   kind:
