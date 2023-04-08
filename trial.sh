@@ -3,5 +3,5 @@
 
 y="HeLlo/"
 echo $y
-val="$(echo $y | tr '[:upper:]' '[:lower:]')"
+val=$(echo $y | tr '[:upper:]' '[:lower:]')
 echo $val

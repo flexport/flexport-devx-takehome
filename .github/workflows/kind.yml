@@ -7,7 +7,7 @@ on:
     types:
       - completed
 
-GIT_REPO="$( {{ github.repository }} | tr '[:upper:]' '[:lower:]')"
+GIT_REPO=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 echo $GIT_REPO
 
 env:
