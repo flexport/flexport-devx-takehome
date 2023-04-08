@@ -8,7 +8,7 @@ on:
       - completed
 
 env:
-  REGISTRY: ghcr.io
+  IMAGE_NAME = ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
 
 jobs:
   kind:
@@ -26,13 +26,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3-pip
           sudo pip install pytest==7.2.2
-          git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo $git_repo
-          docker pull ${{ env.REGISTRY }}/$git_repo
+          #git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          #echo $git_repo
+          #docker pull ${{ env.REGISTRY }}/$git_repo
+          docker pull ${{ env.IMAGE_NAME }}
           docker images
-          docker run -d -p 5000 ${{ env.REGISTRY }}/$git_repo
+          #docker run -d -p 5000 ${{ env.REGISTRY }}/$git_repo
+          docker run -d -p 5000 ${{ env.IMAGE_NAME }}
           docker ps
-          docker run --rm ${{ env.REGISTRY }}/$git_repo pytest tests/
+          #docker run --rm ${{ env.REGISTRY }}/$git_repo pytest tests/
+          docker run --rm ${{ env.IMAGE_NAME }} pytest tests/
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
@@ -46,8 +49,10 @@ jobs:
           echo "environment-kubeconfig:" ${{ env.KUBECONFIG }}
       - name: Deploy Application
         run: |
-          git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          kubectl create deployment ashwin-rps-app --image=${{ env.REGISTRY }}/$git_repo
+          #git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          #kubectl create deployment ashwin-rps-app --image=${{ env.REGISTRY }}/$git_repo
+          kind load docker-image ${{ env.IMAGE_NAME }} --name rps-flexport
+          kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
           kubectl get pods
           #echo "------ DESCRIBING POD --------"
           #kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
