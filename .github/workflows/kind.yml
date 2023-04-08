@@ -8,7 +8,7 @@ on:
       - completed
 
 env:
-  IMAGE_NAME = ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
+  IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
 
 jobs:
   kind:
