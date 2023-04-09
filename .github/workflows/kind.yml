@@ -33,7 +33,7 @@ jobs:
         run: |
           kubectl describe services/rps-app
           kubectl port-forward service/rps-app 5000:5000 > /dev/null &
-          ENDPOINT=http://localhost:5000 pytest tests/integration
+          URL=http://localhost:5000 pytest tests/integration
           python -m pytest -v ./tests/integration/test_integration.py
           coverage run -m pytest -v ./tests/integration
           coverage report -m
