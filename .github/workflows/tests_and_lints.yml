@@ -1,0 +1,56 @@
+yaml
+name: Unit Tests and Linting
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with: python-version: ${{matrix.python-version}}
+
+      - name: Install Dependencies
+        run: |
+          # python -m venv venv
+          python -m pip install --upgrade pip
+          python -m pip install -U -r requirements.txt
+          pip install git+https://github.com/psf/black
+          pip install pylint
+          # pip install coverage
+          PYTHONPATH="${PYTHON_PATH}:./src"
+
+      - name: Checking format with black
+        run: |
+          black ./src
+
+      - name: Linting with Pylint
+        run: |
+          pylint ./src
+
+      - name: Run Unit Tests
+        run: |
+          # PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
+          python -m pytest -v tests/unit
+
+      - name: Run Functional Tests
+        run: |
+          # PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
+          python -m pytest -v tests/functional
+  
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Get Coverage
+        uses: orgoro/coverage@v3
+        with:
+          coverageFile: path/to/coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
