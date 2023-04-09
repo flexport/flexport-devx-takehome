@@ -31,5 +31,5 @@ jobs:
           context: .
           push: true
           tags: |
-            username/package:latest
-            username/package:${{ github.sha }}
+            username/rps:latest
+            username/rps:${{ github.sha }}
