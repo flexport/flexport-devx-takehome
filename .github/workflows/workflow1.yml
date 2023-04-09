@@ -26,7 +26,7 @@ jobs:
         black $(git ls-files '*.py')
     - name: testing with coverage
       run: |
-        pytest --cov=myproj tests/
+        PYTHONPATH="${PYTHONPATH}:./src" coverage run --source=./src -m pytest
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
