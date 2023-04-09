@@ -29,11 +29,14 @@ jobs:
         run: |
           pip install pytest
           pip install pytest-cov
-      - name: Integration test
+      - name: Test Deployment
         run: |
+          export NODE_PORT=$(kubectl get services/rps -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
           kubectl describe services/rps
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl port-forward service/rps 5000:5000 > /dev/null &
-          URL=http://localhost:5000 pytest tests/integration
+          export URL=http://localhost:5000
           python -m pytest -v ./tests/integration/test_integration.py
           coverage run -m pytest -v ./tests/integration
           coverage report -m
