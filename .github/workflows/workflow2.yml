@@ -30,4 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: user/app:latest
+          tags: |
+            username/package:latest
+            username/package:${{ github.sha }}
