@@ -31,8 +31,8 @@ jobs:
           pip install pytest-cov
       - name: Integration test
         run: |
-          kubectl describe services/rps-app
-          kubectl port-forward service/rps-app 5000:5000 > /dev/null &
+          kubectl describe services/rps
+          kubectl port-forward service/rps 5000:5000 > /dev/null &
           URL=http://localhost:5000 pytest tests/integration
           python -m pytest -v ./tests/integration/test_integration.py
           coverage run -m pytest -v ./tests/integration
