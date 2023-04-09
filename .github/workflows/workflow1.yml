@@ -27,6 +27,8 @@ jobs:
     - name: testing with coverage
       run: |
         PYTHONPATH="${PYTHONPATH}:./src" coverage run --source=./src -m pytest
+    - name: Get coverage report
+      run: coverage report -m
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
