@@ -22,7 +22,6 @@ jobs:
           python -m pip install -U -r requirements.txt
           pip install git+https://github.com/psf/black
           pip install pylint
-          PYTHONPATH="${PYTHON_PATH}:./src"
 
       - name: Checking format with black
         run: |
@@ -34,13 +33,11 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          # PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
-          python -m pytest -v tests/unit
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
 
       - name: Run Functional Tests
         run: |
-          # PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
-          python -m pytest -v tests/functional
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
   
   coverage:
     name: Coverage
