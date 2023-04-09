@@ -1,0 +1,47 @@
+name: deploy k8s
+on:
+  workflow_run:
+    workflows: [docker build]
+    types:
+      - completed
+      
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create a k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+      - name: Testing
+        run: |
+          kubectl wait nodes --for condition=Ready --all
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+      - name: Deploy Application
+        run: |
+          kubectl create deployment rps --image=${{ secrets.DOCKERHUB_USERNAME }}/rps:latest
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/rps --type=NodePort --port 5000
+      - name: install dependencies for integration testing
+        run: |
+          pip install pytest
+          pip install pytest-cov
+      - name: Test Deployment
+        run: |
+          kubectl describe services/rps-app
+          kubectl port-forward service/rps-app 5000:5000 > /dev/null &
+          ENDPOINT=http://localhost:5000 pytest tests/integration
+          python -m pytest -v ./tests/integration/test_integration.py
+          coverage run -m pytest -v ./tests/integration
+          coverage report -m
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd
