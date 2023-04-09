@@ -19,6 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install black
+        pip install pytest-cov
         pip install -r $(git ls-files 'requirements.txt')
     - name: Analysing the code with pylint
       run: |
@@ -28,4 +29,4 @@ jobs:
         black $(git ls-files '*.py')
     - name: testing with coverage
       run: |
-        pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app . | tee pytest-coverage.txt
+        pytest --cov=myproj tests/
