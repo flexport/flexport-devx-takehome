@@ -4,10 +4,6 @@ on:
     workflows: [docker build]
     types:
       - completed
-      
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   kind:
@@ -33,7 +29,7 @@ jobs:
         run: |
           pip install pytest
           pip install pytest-cov
-      - name: Test Deployment
+      - name: Integration test
         run: |
           kubectl describe services/rps-app
           kubectl port-forward service/rps-app 5000:5000 > /dev/null &
