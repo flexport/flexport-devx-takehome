@@ -31,18 +31,20 @@ app = Flask(__name__)
 
 @app.route("/health")
 def health():
+    """ Health Check """
     return "OK"
 
 @app.route("/rps", methods = ['POST'])
 def rps():
+    """ Execute the Game and Return a Game Report """
     # Create number to choice mapping
     mapping = ["Rock", "Paper", "Scissors"]
 
     move = request.json.get('move', '')
     try:
         user_choice = mapping.index(move.lower().capitalize())
-    except ValueError:
-        raise InvalidMove(f"{move} is invalid. Valid moves: {mapping}")
+    except ValueError as err:
+        raise InvalidMove(f"{move} is invalid. Valid moves: {mapping}") from err
 
     game_result, pc_choice  = rock_paper_scissors(user_choice)
     if game_result == 0:
