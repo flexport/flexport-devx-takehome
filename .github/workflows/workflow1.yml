@@ -21,12 +21,12 @@ jobs:
         pip install black
         pip install pytest-cov
         pip install -r $(git ls-files 'requirements.txt')
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
     - name: using black to format
       run: |
         black $(git ls-files '*.py')
     - name: testing with coverage
       run: |
         pytest --cov=myproj tests/
+    - name: Analysing the code with pylint
+      run: |
+        pylint $(git ls-files '*.py')
