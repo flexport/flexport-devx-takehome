@@ -1,9 +1,6 @@
 name: docker build
 
-on: 
-  workflow_run:
-    workflows: [Pylint]
-    types: [completed]
+on: [push, pull_request]
 
 jobs:
   docker:
