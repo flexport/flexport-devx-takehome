@@ -31,5 +31,5 @@ jobs:
           context: .
           push: true
           tags: |
-            moulid15/rps:latest
-            moulid15/rps:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/rps:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/rps:${{ github.sha }}
