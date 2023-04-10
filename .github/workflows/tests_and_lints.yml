@@ -1,4 +1,5 @@
 name: Unit Tests and Linting
+# The workflow will be executed for all push requests
 on: push
 
 jobs:
@@ -22,6 +23,7 @@ jobs:
           python -m pip install -U -r requirements.txt
           pip install git+https://github.com/psf/black
           pip install pylint
+          pip install coverage
 
       - name: Checking format with black
         run: |
@@ -38,14 +40,7 @@ jobs:
       - name: Run Functional Tests
         run: |
           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
-  
-  coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Get Coverage
-        uses: orgoro/coverage@v3
-        with:
-          coverageFile: path/to/coverage.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generate Coverage Report
+        run: |
+          coverage run -m unittest
