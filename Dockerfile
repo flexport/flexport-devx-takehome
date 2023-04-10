@@ -2,6 +2,8 @@
 FROM python:3.8-slim-buster
 WORKDIR /app
 COPY ./src ./src
+RUN apt-get update
+RUN apt-get install -y curl
 COPY requirements.txt ./
 ENV PYTHONPATH "${PYTHON_PATH}:./src"
 RUN pip install -r requirements.txt
