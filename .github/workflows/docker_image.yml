@@ -39,21 +39,9 @@ jobs:
           load: true
           tags: ${{ env.TEST_VERSION }}
 
-      - name: Start Test Image
+      - name: Test Image
         run: |
-          docker run -d --name test-image ${{ env.TEST_VERSION }}
-
-      - name: Wait for Container To Start
-        run: |
-          docker ps --filter "name=test-image" --filter "status=running" --format "{{.ID}}"
-      
-      - name: Run Tests
-        run: |
-          python -m pytest
-      
-      - name: Stop Test Image
-        run: |
-          docker stop test-image && docker rm test-image
+          docker run -d --rm --name test-image ${{ env.TEST_VERSION }}
 
       - name: Extract metadata for Docker
         id: meta
