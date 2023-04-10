@@ -31,12 +31,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build the Test Version of the Docker Image
         uses: docker/build-push-action@v4
         with:
@@ -47,7 +41,13 @@ jobs:
 
       - name: Test Docker Image
         run: |
-          docker run --rm ${{ env.TEST_VERSION }}
+          docker run --rm --name rock-paper-scissors-app -p 8080:5000 ${{ env.TEST_VERSION }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
