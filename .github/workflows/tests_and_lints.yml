@@ -44,5 +44,5 @@ jobs:
       
       - name: Run Coverage and Generate Coverage Report
         run: |
-          coverage run -m pytest
-          pytest --cov
+          PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest
+          PYTHONPATH="${PYTHON_PATH}:./src" pytest --cov
