@@ -20,10 +20,10 @@ def test_rps():
     """
     moves = ["Rock", "Paper", "Scissors"]
     for move in moves:
-        response = requests.post(f"{URL}/rps", data={"move": move})
+        response = requests.post(f"{URL}/rps", json={"move": move})
         assert response.status_code == 200
 
     try:
-        response = requests.post("/rps", data={"move": "wrong"})
+        response = requests.post("/rps", json={"move": "wrong"})
     except ValueError:
         pass
