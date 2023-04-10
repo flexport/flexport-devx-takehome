@@ -42,5 +42,6 @@ jobs:
           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
       
       - name: Generate Coverage Report
-        run: |
-          coverage run -m unittest
+        uses: rcmdnk/python-action@v1
+        inputs:
+          coverage: 1
