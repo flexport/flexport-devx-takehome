@@ -41,7 +41,11 @@ jobs:
 
       - name: Start Test Image
         run: |
-          docker run -d ${{ env.TEST_VERSION }}
+          docker run -d -name test-image ${{ env.TEST_VERSION }}
+
+      - name: Wait for Container To Start
+        run: |
+          docker ps --filter "name=test-image" --filter "status=running" --format "{{.ID}}"
       
       - name: Run Tests
         run: |
@@ -49,7 +53,7 @@ jobs:
       
       - name: Stop Test Image
         run: |
-          docker stop ${{ env.TEST_VERSION }} && docker rm ${{ env.TEST_VERSION }}
+          docker stop test-image && docker rm test-image
 
       - name: Extract metadata for Docker
         id: meta
