@@ -25,7 +25,7 @@ jobs:
           pip install pylint
           pip install coverage
           pip install pytest-cov
-          PYTHONPATH="${PYTHON_PATH}:./src"
+          export PYTHONPATH="${PYTHON_PATH}:./src"
 
       - name: Checking format with black
         run: |
