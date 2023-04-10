@@ -28,17 +28,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build the Test Version of the Docker Image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          load: true
-          tags: ${{ env.TEST_VERSION }}
+        run: |
+          docker build --tag ${{ env.TEST_VERSION }} .
 
       - name: Test Image
         run: |
-          docker run -d --rm --name test-image ${{ env.TEST_VERSION }}
+          docker run -d --rm --name test-image --tag ${{ env.TEST_VERSION }}
 
       - name: Extract metadata for Docker
         id: meta
