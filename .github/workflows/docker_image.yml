@@ -41,7 +41,7 @@ jobs:
 
       - name: Start Test Image
         run: |
-          docker run ${{ env.TEST_VERSION }}
+          docker run -d ${{ env.TEST_VERSION }}
       
       - name: Run Tests
         run: |
