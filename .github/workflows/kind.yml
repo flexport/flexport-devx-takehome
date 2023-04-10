@@ -38,7 +38,7 @@ jobs:
           kubectl port-forward service/rps 5000:5000 > /dev/null &
           export URL=http://localhost:5000
           pytest tests/integration
-          coverage run -m pytest -v tests/integration
+          PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/integration
           coverage report -m
       - name: Cleanup
         if: always()
