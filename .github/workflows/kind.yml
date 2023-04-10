@@ -50,6 +50,7 @@ jobs:
           echo "environment-kubeconfig:" ${{ env.KUBECONFIG }}
       - name: Deploy Application
         run: |
+          echo "deploy application"
           #git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           #kubectl create deployment ashwin-rps-app --image=${{ env.REGISTRY }}/$git_repo
           kind load docker-image ${{ env.IMAGE_NAME }} --name ashwin-rps-cluster
