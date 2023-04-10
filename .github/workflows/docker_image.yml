@@ -41,7 +41,7 @@ jobs:
 
       - name: Start Test Image
         run: |
-          docker run -d -name test-image ${{ env.TEST_VERSION }}
+          docker run -d --name test-image ${{ env.TEST_VERSION }}
 
       - name: Wait for Container To Start
         run: |
