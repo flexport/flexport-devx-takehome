@@ -20,6 +20,7 @@ jobs:
         pip install pylint
         pip install black
         pip install pytest-cov
+        pip install requests
         pip install -r $(git ls-files 'requirements.txt')
     - name: using black to format
       run: |
