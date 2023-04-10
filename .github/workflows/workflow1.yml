@@ -21,13 +21,15 @@ jobs:
         pip install black
         pip install pytest-cov
         pip install requests
+        export URL=http://localhost:5000
         pip install -r $(git ls-files 'requirements.txt')
     - name: using black to format
       run: |
         black $(git ls-files '*.py')
     - name: testing with coverage
       run: |
-        PYTHONPATH="${PYTHONPATH}:./src" coverage run --source=./src -m pytest
+        PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/unit
+        PYTHONPATH="${PYTHONPATH}:./src" coverage run -m pytest -v tests/functional
     - name: Get coverage report
       run: coverage report -m
     - name: Analysing the code with pylint
