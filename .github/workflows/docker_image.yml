@@ -37,7 +37,7 @@ jobs:
 
       - name: Test Image
         run: |
-          docker run -d --rm --name test-image --tag ${{ env.TEST_VERSION }}
+          docker run -d --rm --name test-image ${{ env.TEST_VERSION }}
 
       - name: Extract metadata for Docker
         id: meta
