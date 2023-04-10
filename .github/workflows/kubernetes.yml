@@ -23,9 +23,6 @@ jobs:
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
-        with:
-          cluster_name:
-            - flexport-dev
 
       - name: Testing
         run: |
@@ -53,4 +50,4 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          kind delete cluster --name flexport-dev
+          kind delete cluster --name test-cd-flexport-dev
