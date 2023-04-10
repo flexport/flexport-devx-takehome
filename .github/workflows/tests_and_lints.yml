@@ -25,6 +25,7 @@ jobs:
           pip install pylint
           pip install coverage
           pip install pytest-cov
+          PYTHONPATH="${PYTHON_PATH}:./src"
 
       - name: Checking format with black
         run: |
@@ -36,13 +37,13 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
+          python -m pytest -v tests/unit
 
       - name: Run Functional Tests
         run: |
-          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
+          python -m pytest -v tests/functional
       
       - name: Run Coverage and Generate Coverage Report
         run: |
-          PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest
-          PYTHONPATH="${PYTHON_PATH}:./src" pytest --cov
+          coverage run -m pytest
+          pytest --cov
