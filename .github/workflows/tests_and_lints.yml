@@ -28,7 +28,6 @@ jobs:
           pip install git+https://github.com/psf/black
           pip install pylint
           pip install coverage
-          pip install pytest-cov
 
       - name: Checking format with black
         run: |
@@ -49,4 +48,4 @@ jobs:
       - name: Run Coverage and Generate Coverage Report
         run: |
           coverage run -m pytest
-          coverage report -m
+          coverage report --show-missing
