@@ -39,10 +39,16 @@ jobs:
           load: true
           tags: ${{ env.TEST_VERSION }}
 
-      - name: Test Docker Image
+      - name: Start Test Image
         run: |
           docker run ${{ env.TEST_VERSION }}
+      
+      - name: Run Tests
+        run: |
           pytest
+      
+      - name: Stop Test Image
+        run: |
           docker stop ${{ env.TEST_VERSION }} && docker rm ${{ env.TEST_VERSION }}
 
       - name: Extract metadata for Docker
