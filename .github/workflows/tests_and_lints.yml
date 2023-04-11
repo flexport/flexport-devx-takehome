@@ -44,6 +44,6 @@ jobs:
       
       - name: Run Coverage and Generate Coverage Report
         run: |
-          coverage run -m --source=./src pytest - v tests/unit
-          coverage run -m --source=./src pytest - v tests/functional
+          coverage run -m --source=./src pytest -v tests/unit
+          coverage run -m --source=./src pytest -v tests/functional
           coverage report --show-missing
