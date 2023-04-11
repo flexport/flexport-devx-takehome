@@ -46,9 +46,9 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/flexport-dev
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -i $POD_NAME -- /bin/sh ENDPOINT=http://localhost:5000 python -m pytest -v tests/integration
-          kubectl exec -i $POD_NAME -- /bin/sh coverage run -m pytest
-          kubectl exec -i $POD_NAME -- /bin/sh coverage report --show-missing
+          kubectl exec -i $POD_NAME /bin/sh -- ENDPOINT=http://localhost:5000 python -m pytest -v tests/integration
+          kubectl exec -i $POD_NAME /bin/sh -- coverage run -m pytest
+          kubectl exec -i $POD_NAME /bin/sh -- coverage report --show-missing
 
       - name: Cleanup
         if: always()
