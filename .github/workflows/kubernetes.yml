@@ -1,8 +1,8 @@
 name: Deliver Applications to Kubernetes
 on:
   workflow_run:
-    workflows: ["Build and Publish Docker Image"]
-    branches: ["main"]
+    workflows: [Build and Publish Docker Image]
+    branches: [main]
     types:
       - completed
 env:
