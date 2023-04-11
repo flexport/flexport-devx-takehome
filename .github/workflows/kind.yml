@@ -32,7 +32,7 @@ jobs:
           echo "deploy application"
           kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
           kubectl wait pods --for condition=Ready --all --timeout=90s
-          kubectl expose deployment/ashwin-rps-app --type=NodePort --port=8080
+          kubectl expose deployment/ashwin-rps-app --type=NodePort --port=5000
 
       - name: Install Test Dependencies
         run: |
@@ -51,7 +51,7 @@ jobs:
           kubectl describe services/ashwin-rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           which curl
-          kubectl port-forward service/ashwin-rps-app 8080:8080 > /dev/null &
+          kubectl port-forward service/ashwin-rps-app 5000:5000 > /dev/null &
           python -m pytest -v ./tests/integration/test_integeration.py
           PYTHONPATH="./src" coverage run -m pytest ./tests/
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
