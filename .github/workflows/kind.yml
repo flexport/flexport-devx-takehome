@@ -15,33 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        #- name: Login to ghcr
-        #  uses: docker/login-action@v1
-        #  with:
-        #    registry: ghcr.io
-        #    username: ${{ github.actor }}
-        #    password: ${{ secrets.CR_PAT }}
-        #- name: pull and run
-        #  run: |
-        #    sudo apt-get update
-        #    sudo apt-get install python3-pip
-        #    sudo pip install pytest==7.2.2
-        #    #git_repo=$( echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        #    #echo $git_repo
-        #    #docker pull ${{ env.REGISTRY }}/$git_repo
-        #    docker pull ${{ env.IMAGE_NAME }}
-        #    docker images
-        #    #docker run -d -p 5000 ${{ env.REGISTRY }}/$git_repo
-        #    docker run -d -p 5000 ${{ env.IMAGE_NAME }}
-        #    docker ps
-        #    #docker run --rm ${{ env.REGISTRY }}/$git_repo pytest tests/
-        #    docker run --rm ${{ env.IMAGE_NAME }} pytest tests/
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
       - name: Testing
         run: |
-          #kind create cluster --name ashwin-rps-cluster
           kubectl wait nodes --for condition=Ready --all
           kubectl cluster-info
           kubectl get pods -n kube-system
@@ -52,32 +30,17 @@ jobs:
       - name: Deploy Application
         run: |
           echo "deploy application"
-          #kind load docker-image ${{ env.IMAGE_NAME }} --name ashwin-rps-cluster
           kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
-          #kubectl get pods
-          #echo "------ DESCRIBING POD --------"
-          #kubectl describe pod $(kubectl get pods | awk '/<pod-label-selector>/{print $1}')
-          #kubectl describe pod
-          # pod_name=$(kubectl get pods | tail -n1 | awk '{print $1}')
-          # echo "-------- GET PODS --------------"
-          # kubectl get pods
-          # echo "======= PRINTING POD NAME =========="
-          # echo $pod_name
-          # #kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}'
-          # kubectl get pod $pod_name -o json
-          # #jq --version
-          # #container_name=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].name}' | jq -r .[0])
-          # #echo "------ PRINTING CONTAINER NAME -------------"
-          # #echo $container_name
-          # echo "------- PRINTING POD LOGS ------"
-          # #kubectl logs $pod_name ashwin-flask-app
-          # #kubectl get deployments
-          # sleep 90
-          # kubectl get pods
-          # kubectl describe pod $pod_name
-          # kubectl logs $pod_name
           kubectl wait pods --for condition=Ready --all --timeout=90s
           kubectl expose deployment/ashwin-rps-app --type=NodePort --port=8080
+
+      - name: Install Test Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install curl
+          pip install pytest
+          pip install requests
+          pip install coverage
 
       - name: Test Deployment
         run: |
@@ -87,13 +50,17 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/ashwin-rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          which curl
           kubectl port-forward service/ashwin-rps-app 8080:8080 > /dev/null &
-          #kubectl exec -ti $POD_NAME -- curl localhost:8080/health
+          python -m pytest -v ./tests/integration/test_integeration.py
+          PYTHONPATH="./src" coverage run -m pytest ./tests/
+          kubectl exec -ti $POD_NAME -- curl localhost:5000/health
 
       - name: Cleanup
         if: always()
         run: |
           echo "will delete cluster"
           export CLUSTER_NAME=$(kubectl config current-context)
+          echo $CLUSTER_NAME
           kind delete cluster --name ${CLUSTER_NAME}
 
