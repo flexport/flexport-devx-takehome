@@ -1,7 +1,7 @@
 import json
 import requests
 
-URL = "http://127.0.0.1:5000"
+URL = "http://0.0.0.0:5000"
 
 
 def test_health():
