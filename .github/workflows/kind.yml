@@ -54,6 +54,8 @@ jobs:
           kubectl port-forward service/ashwin-rps-app 5000:5000 > /dev/null &
           python -m pytest -v ./tests/integration/test_integeration.py
           #PYTHONPATH="./src" coverage run -m pytest ./tests/
+          curl localhost:5000/health
+          kubectl run mycurl --image=appropriate/curl --restart=Never -- sleep infinity
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
 
       - name: Cleanup
