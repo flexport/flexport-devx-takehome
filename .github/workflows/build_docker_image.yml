@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # set up python
+      ## set up python
       - name: Setup python environment
         uses: actions/setup-python@v2
         with:
