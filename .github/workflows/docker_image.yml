@@ -1,0 +1,53 @@
+name: Build and Publish Docker Image
+on: 
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  TEST_VERSION: user/app:test
+
+jobs:
+  build-and-publish:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out Repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build the Test Version of the Docker Image
+        run: |
+          docker build --tag ${{ env.TEST_VERSION }} .
+          docker run -d --rm --name test-image ${{ env.TEST_VERSION }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}

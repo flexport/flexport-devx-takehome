@@ -1,0 +1,49 @@
+name: Unit Tests and Linting
+# The workflow will be executed for all push requests
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with: 
+          python-version: ${{matrix.python-version}}
+
+      - name: Set PYTHONPATH
+        run: |
+          echo "PYTHONPATH="${PYTHON_PATH}:./src"" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -U -r requirements.txt
+
+      - name: Checking format with black
+        run: |
+          black ./src
+
+      - name: Linting with Pylint
+        run: |
+          pylint ./src
+
+      - name: Run Unit Tests
+        run: |
+          python -m pytest -v tests/unit
+
+      - name: Run Functional Tests
+        run: |
+          python -m pytest -v tests/functional
+      
+      - name: Run Coverage and Generate Coverage Report
+        run: |
+          coverage run -m --source=./src pytest -v tests/unit
+          coverage run -m --source=./src pytest -v tests/functional
+          coverage report --show-missing

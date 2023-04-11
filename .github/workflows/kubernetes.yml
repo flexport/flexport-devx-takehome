@@ -1,0 +1,56 @@
+name: Deliver Applications to Kubernetes
+on:
+  workflow_run:
+    workflows: [Build and Publish Docker Image]
+    branches: [main]
+    types:
+      - completed
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  kind:
+    name: Deliver Applications to Kubernetes
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+
+      - name: Test Cluster
+        run: |
+          kubectl wait nodes --for condition=Ready --all
+          kubectl get pods -n kube-system
+          kubectl cluster-info
+          kubectl get storageclass standard
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+
+      - name: Deployment to Kubernetes Cluster
+        run: |
+          kubectl create deployment flexport-dev --image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/flexport-dev --type=NodePort --port 5000
+
+      - name: Test Deployment
+        run: |
+          export NODE_PORT=$(kubectl get services/flexport-dev -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
+          kubectl describe services/flexport-dev
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl port-forward $POD_NAME 5000:5000 &
+          kubectl exec -i $POD_NAME -- bash -c "python -m pytest -v tests/integration"
+          kubectl exec -i $POD_NAME -- bash -c "coverage run -m pytest"
+          kubectl exec -i $POD_NAME -- bash -c "coverage report --show-missing"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd-flexport-dev
