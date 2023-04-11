@@ -42,8 +42,6 @@ jobs:
         run: |
           python -m pytest -v tests/functional
       
-      - name: Run Coverage and Generate Coverage Report
+      - name: Generate Coverage Report
         run: |
-          ENDPOINT=http://localhost:5000 coverage run -m pytest - v tests/unit
-          ENDPOINT=http://localhost:5000 coverage run -m pytest - v tests/functional
           coverage report --show-missing
