@@ -1,6 +1,6 @@
 FROM python
 WORKDIR /app
-COPY ./src ./src
+COPY . ./app
 COPY requirements.txt ./
 ENV PYTHONPATH "${PYTHON_PATH}:./src"
 RUN pip install -r requirements.txt
