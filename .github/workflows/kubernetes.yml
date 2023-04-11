@@ -12,6 +12,7 @@ env:
 
 jobs:
   kind:
+    name: Deliver Applications to Kubernetes
     permissions:
       id-token: write
       contents: read
@@ -45,7 +46,6 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/flexport-dev
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-        # kubectl exec -ti $POD_NAME -- echo "PYTHONPATH="${PYTHON_PATH}:./src"" >> $GITHUB_ENV
           kubectl exec -i $POD_NAME -- ENDPOINT=http://localhost:5000 python -m pytest -v tests/integration
           kubectl exec -i $POD_NAME -- coverage run -m pytest
           kubectl exec -i $POD_NAME -- coverage report --show-missing
