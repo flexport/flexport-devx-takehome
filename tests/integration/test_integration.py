@@ -13,7 +13,7 @@ def test_game():
     Test the Rock Paper Scissors Game Play
     """
     payload = {"move": "Rock"}
-    headers = {"Content-Type", "application/json"}
+    headers = {"Content-Type": "application/json"}
     resp = requests.post("http://127.0.0.1:5000", data=payload, headers=headers)
     assert resp.status_code == 200
     pc_choice, game_result, result = resp.json()
