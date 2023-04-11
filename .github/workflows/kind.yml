@@ -77,17 +77,20 @@ jobs:
           # kubectl describe pod $pod_name
           # kubectl logs $pod_name
           kubectl wait pods --for condition=Ready --all --timeout=90s
-          kubectl expose deployment/ashwin-rps-app --type=NodePort --port 5000
+          kubectl expose deployment/ashwin-rps-app --type=NodePort --port=8080
 
       - name: Test Deployment
         run: |
+          echo "cluster name"
+          kubectl config current-context
           export NODE_PORT=$(kubectl get services/ashwin-rps-app -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/ashwin-rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -ti $POD_NAME -- curl localhost:5000/version
+          kubectl exec -ti $POD_NAME -- curl localhost:8080/health
 
       - name: Cleanup
         if: always()
         run: |
+          echo "will delete cluster"
           kind delete cluster --name test-cd
