@@ -39,7 +39,9 @@ jobs:
           pwd
           docker --version
           docker build -t ashwin-flask-app:latest .
-          docker run --rm ashwin-flask-app:latest pytest tests/
+          docker run --rm ashwin-flask-app:latest pytest tests/unit
+          docker run --rm ashwin-flask-app:latest pytest tests/functional
+
           # Need to modify the yml here
           # If testing the docker image fails or not 100%, then fail the workflow and print the reason.
 

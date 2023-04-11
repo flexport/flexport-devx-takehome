@@ -39,5 +39,6 @@ jobs:
       # if code coverage is < 80% then fail the workflow.
       - name: code coverage
         run: |
-          PYTHONPATH="./src" coverage run -m pytest
+          PYTHONPATH="./src" coverage run -m pytest tests/unit
+          PYTHONPATH="./src" coverage run -m pytest tests/functional
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
