@@ -87,7 +87,7 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/ashwin-rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl port-forward service/ashwin-rps-app 8080:5000/health > /dev/null &
+          kubectl port-forward service/ashwin-rps-app 8080:5000 > /dev/null &
           #kubectl exec -ti $POD_NAME -- curl localhost:8080/health
 
       - name: Cleanup
