@@ -45,7 +45,6 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/flexport-dev
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -ti $POD_NAME -- curl localhost:5000/version          
 
       - name: Cleanup
         if: always()
