@@ -54,7 +54,7 @@ jobs:
           python -m pytest -v ./tests/integration/test_integeration.py
           #PYTHONPATH="./src" coverage run -m pytest ./tests/integration/
           curl localhost:5000/health
-          PYTHONPATH="./src" coverage run -m pytest ./tests/integration/integeration.py
+          PYTHONPATH="./src" coverage run -m pytest ./tests/integration/test_integeration.py
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
 
       - name: Cleanup
