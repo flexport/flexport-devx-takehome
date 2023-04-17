@@ -50,6 +50,10 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/rps-app-deploy
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+
+          # forwards traffic from local machine 5000 to port 5000 on default pod where rps-app-deploy service is running
+          kubectl port-forward service/rps-app-deploy 5000:5000 > /dev/null &     # this command made to run in background for testing purpose
+
           # Testing app's endpoint using curl before performing integration tests to ensure successful deployment of flask application
           curl localhost:5000/health
 
@@ -60,8 +64,6 @@ jobs:
 
           echo "After successful deployment, running integration tests"
 
-          # forwards traffic from local machine 5000 to port 5000 on default pod where rps-app-deploy service is running
-          kubectl port-forward service/rps-app-deploy 5000:5000 > /dev/null &     # this command made to run in background for testing purpose
           python -m pytest -v ./tests/integration/test_integeration.py            # performing integration tests
           PYTHONPATH="./src" coverage run -m pytest ./tests/integration/test_integeration.py  # code coverage for integration tests
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
