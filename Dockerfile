@@ -2,13 +2,11 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./ ./app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY ./ ./
-
-ENV PYTHONPATH="${PYTHON_PATH}:./src"
+ENV PYTHONPATH="${PYTHON_PATH}:/app/src"
 EXPOSE 5000
 
 CMD ["flask", "--app", "src/rock_paper_scissors/app", "run" , "-h", "0.0.0.0"]
