@@ -65,6 +65,7 @@ jobs:
           echo "After successful deployment, running integration tests"
 
           python -m pytest -v ./tests/integration/test_integeration.py            # performing integration tests
+          curl localhost:5000/health
           PYTHONPATH="./src" coverage run -m pytest ./tests/integration/test_integeration.py  # code coverage for integration tests
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
 
