@@ -1,0 +1,64 @@
+name: Build docker Image and push to repo
+
+# After the successful execution of the "lint_and_execute_unit_test" workflow, this workflow is initiated.
+on:
+  workflow_run:
+    workflows:
+      - "lint_and_execute_unit_test"
+    types:
+      - completed
+env:
+  IMAGE_NAME: ghcr.io/ashwin0794/flexport-devx-takehome/ashwin-flask-app:latest
+  REGISTRY: ghcr.io
+
+jobs:
+   build-test-publish:
+    runs-on: ubuntu-latest
+    steps:
+
+      ## set up python
+      - name: Setup python environment
+        uses: actions/setup-python@v2
+        with:
+           python-version: '3.9.12'
+
+      # install pytest
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-pip
+          sudo pip3 install pytest==7.2.2
+          sudo pip3 install requests==2.28.2
+
+      # checkout code
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # build and test docker image locally
+      - name: Build and test docker image
+        run: |
+          docker --version                                                # Docker is already installed in github servers.
+          docker build -t ashwin-flask-app:latest .                       # Building image based on Dockerfile in current directory with Image Name: ashwin-flask-app:latest
+          docker run --rm ashwin-flask-app:latest pytest tests/unit       # Running until and functional tests
+          docker run --rm ashwin-flask-app:latest pytest tests/functional
+
+      # This action will create and boot a builder using docker container driver which will be useful for docker/build-push-action@v2 action.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to ghcr
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}
+        env:
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PASSWORD: ${{ secrets.CR_PAT }}
