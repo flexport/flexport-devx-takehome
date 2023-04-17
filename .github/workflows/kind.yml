@@ -55,7 +55,8 @@ jobs:
           kubectl port-forward service/rps-app-deploy 5000:5000 > /dev/null &     # this command made to run in background for testing purpose
 
           # Testing app's endpoint using curl before performing integration tests to ensure successful deployment of flask application
-          #curl localhost:5000/health
+          sleep 5
+          curl localhost:5000/health
 
           if [ $? -ne 0 ]; then
           echo " flask app deployment on kind k8s failed. localhost5000/health failed. "
