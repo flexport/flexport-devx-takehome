@@ -1,5 +1,6 @@
-name: "Testing rock_paper_scissors on k8s clusterlocally using Kind"
+name: "Testing rock_paper_scissors on k8s cluster locally using Kind"
 
+# After the successful execution of the "Build docker Image and push to repo" workflow, this workflow is initiated.
 on:
   workflow_run:
     workflows:
@@ -16,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create k8s Kind Cluster
+      - name: Create k8s Kind Cluster and installs Helm (K8s package manager)
         uses: helm/kind-action@v1.4.0
       - name: Testing
         run: |
@@ -29,10 +30,11 @@ jobs:
 
       - name: Deploy Application
         run: |
-          echo "deploy application"
-          kubectl create deployment ashwin-rps-app --image=${{ env.IMAGE_NAME }}
+          # For now the docker image's visibility in repo is changed to public - hence can be accessed by k8s.
+          kubectl create deployment rps-app-deploy --image=${{ env.IMAGE_NAME }}
           kubectl wait pods --for condition=Ready --all --timeout=90s
-          kubectl expose deployment/ashwin-rps-app --type=NodePort --port=5000
+          kubectl expose deployment/rps-app-deploy --type=NodePort --port=5000
+          # We are using port 5000 since flask app by default binds to 5000 during app.run
 
       - name: Install Test Dependencies
         run: |
@@ -44,24 +46,29 @@ jobs:
 
       - name: Test Deployment
         run: |
-          echo "cluster name"
-          kubectl config current-context
-          export NODE_PORT=$(kubectl get services/ashwin-rps-app -o go-template='{{(index .spec.ports 0).nodePort}}')
+          export NODE_PORT=$(kubectl get services/rps-app-deploy -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/ashwin-rps-app
+          kubectl describe services/rps-app-deploy
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl port-forward service/ashwin-rps-app 5000:5000 > /dev/null &
-          python -m pytest -v ./tests/integration/test_integeration.py
-          #PYTHONPATH="./src" coverage run -m pytest ./tests/integration/
+          # Testing app's endpoint using curl before performing integration tests to ensure successful deployment of flask application
           curl localhost:5000/health
-          PYTHONPATH="./src" coverage run -m pytest ./tests/integration/test_integeration.py
+
+          if [ $? -ne 0 ]; then
+          echo " flask app deployment on kind k8s failed. localhost5000/health failed. "
+            exit 1
+          fi
+
+          echo "After successful deployment, running integration tests"
+
+          # forwards traffic from local machine 5000 to port 5000 on default pod where rps-app-deploy service is running
+          kubectl port-forward service/rps-app-deploy 5000:5000 > /dev/null &     # this command made to run in background for testing purpose
+          python -m pytest -v ./tests/integration/test_integeration.py            # performing integration tests
+          PYTHONPATH="./src" coverage run -m pytest ./tests/integration/test_integeration.py  # code coverage for integration tests
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
 
       - name: Cleanup
         if: always()
         run: |
-          echo "will delete cluster"
           export CLUSTER_NAME=$(kubectl config current-context)
-          echo $CLUSTER_NAME
+          echo "cluster name is : ${CLUSTER_NAME}"
           kind delete cluster --name ${CLUSTER_NAME}
-

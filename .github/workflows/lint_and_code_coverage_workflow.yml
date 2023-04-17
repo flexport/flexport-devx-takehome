@@ -1,6 +1,6 @@
 name: lint_and_execute_unit_test
 
-on: [push]
+on: [push]      # This workflow will be initiated for every file that is pushed to the repository.
 
 jobs:
 
@@ -18,27 +18,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: debug info
-        run: |
-          black --version
-          pytest --version
-          flask --version
-          pylint --version
-          coverage --version
-          pwd
       - name: check formatting
         run: |
-          black --diff .
-          black .
+          black --diff .  # Here --diff flag only shows diff of changes it would make
+          black .         # Here black modifies all python files recursively in current directory
 
-      # if lint fails, then workflow will fail.
-      - name: lint the code
-        run: find ./  -name "*.py" -exec pylint {} +
+      - name: lint code
+        run: find ./  -name "*.py" -exec pylint {} +  # lint all python files recursively in current directory
         continue-on-error: true
+        # lint fails for syntax errors, style corrections and etc, then workflow will also fail. Hence added continue-on-error to be true.
+        # TODO: fail workflow if errors encountered by pylint otherwise developer has to decide corrections needed for warnings thrown by pylint.
 
-      # if code coverage is < 80% then fail the workflow.
+      # performing code coverage only for unit and functional tests
       - name: code coverage
         run: |
           PYTHONPATH="./src" coverage run -m pytest tests/unit
           PYTHONPATH="./src" coverage run -m pytest tests/functional
           PYTHONPATH="./src" coverage report -m | grep -e 'src' -e 'tests/'
+          # TODO: fail workflow if coverage report is not above certain percentage based on team's/organsation's standard.

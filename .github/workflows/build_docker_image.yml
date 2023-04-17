@@ -1,5 +1,6 @@
 name: Build docker Image and push to repo
 
+# After the successful execution of the "lint_and_execute_unit_test" workflow, this workflow is initiated.
 on:
   workflow_run:
     workflows:
@@ -33,18 +34,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # build and test docker image locally and github servers have docker installed
+      # build and test docker image locally
       - name: Build and test docker image
         run: |
-          pwd
-          docker --version
-          docker build -t ashwin-flask-app:latest .
-          docker run --rm ashwin-flask-app:latest pytest tests/unit
+          docker --version                                                # Docker is already installed in github servers.
+          docker build -t ashwin-flask-app:latest .                       # Building image based on Dockerfile in current directory with Image Name: ashwin-flask-app:latest
+          docker run --rm ashwin-flask-app:latest pytest tests/unit       # Running until and functional tests
           docker run --rm ashwin-flask-app:latest pytest tests/functional
 
-          # Need to modify the yml here
-          # If testing the docker image fails or not 100%, then fail the workflow and print the reason.
-
+      # This action will create and boot a builder using docker container driver which will be useful for docker/build-push-action@v2 action.
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -55,21 +53,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-            # - name: Extract metadata (tags, labels) for Docker
-            #   id: meta
-            #   uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-            #   with:
-            #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-            # - name: Build and push Docker image
-            #   uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-            #   with:
-            #     context: .
-            #     push: true
-            #     tags: ${{ steps.meta.outputs.tags }},latest
-            #     labels: ${{ steps.meta.outputs.labels }}
-
-      # if docker push fails, then fail the workflow
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
