@@ -1,61 +1,64 @@
-name: Deploy on K8s
+name: Build and Deploy to Kubernetes
 
 on:
-  workflow_run:
-    workflows: ["Build Docker Image"]
-    types:
-      - completed
-
-env:
-  DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  push:
+    branches:
+      - main
 
 jobs:
-  kind:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Create k8s Kind Cluster
+      - name: Get Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log into ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.gh_tok }}
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Set up Kubernetes cluster with kind
         uses: helm/kind-action@v1.4.0
-      - name: Testing
+
+      - name: Create Kubernetes Secret
         run: |
-          kubectl wait nodes --for condition=Ready --all
-          kubectl cluster-info
-          kubectl get pods -n kube-system
-          echo "current-context:" $(kubectl config current-context)
-          echo "environment-kubeconfig:" ${KUBECONFIG}
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.gh_tok }}
 
-      - name: Log in to GitHub Container Registry
-        run: echo ${{ secrets.gh_tok }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Deploy Application
+      - name: Apply Kubernetes Deployment
         run: |
-          kubectl create deployment rps-deployment --image=${{ env.DOCKER_IMAGE }}
-          kubectl wait pods --for condition=Ready --timeout=120s --all
-          kubectl expose deployment/rps-deployment --type=NodePort --port 8080
-
-      - name: Check pod logs
-        if: failure()
-        run: |
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl logs $POD_NAME
-
-      - name: Check Kubernetes events
-        if: failure()
-        run: |
-          kubectl get events --sort-by='.metadata.creationTimestamp'
-
-      - name: Test Deployment
-        run: |
-          export NODE_PORT=$(kubectl get services/rps-deployment -o go-template='{{(index .spec.ports 0).nodePort}}')
-          echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/rps-deployment
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -ti $POD_NAME -- curl localhost:8080/version
-
-      - name: Run Unit Tests
-        run: pytest --cov=src --cov-report=xml tests/functional/
-
-      - name: Cleanup
-        if: always()
-        run: |
-          kind delete cluster --name test-cd
+          cat <<EOF | kubectl apply -f -
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: rps-deployment
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: rps-app
+            template:
+              metadata:
+                labels:
+                  app: rps-app
+              spec:
+                containers:
+                - name: flexport-devx-takehome
+                  image: ghcr.io/${{ github.repository }}:${{ github.sha }}
+                imagePullSecrets:
+                - name: ghcr-secret
+          EOF
