@@ -27,8 +27,19 @@ jobs:
       - name: Deploy Application
         run: |
           kubectl create deployment rps-deployment --image=${{ env.DOCKER_IMAGE }}
-          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl wait pods --for condition=Ready --timeout=120s --all
           kubectl expose deployment/rps-deployment --type=NodePort --port 8080
+
+      - name: Check pod logs
+        if: failure()
+        run: |
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl logs $POD_NAME
+
+      - name: Check Kubernetes events
+        if: failure()
+        run: |
+          kubectl get events --sort-by='.metadata.creationTimestamp'
 
       - name: Test Deployment
         run: |
