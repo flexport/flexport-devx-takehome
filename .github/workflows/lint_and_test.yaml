@@ -22,7 +22,6 @@ jobs:
       - name: Install Requirements
         run: |
           pip3 install -r requirements.txt
-          pip3 install black pylint pytest pytest-cov
 
       - name: Code Format Check With Black
         run: black --check .
