@@ -62,3 +62,22 @@ jobs:
                 imagePullSecrets:
                 - name: ghcr-secret
           EOF
+  functional_tests:
+    needs: build_and_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Kubernetes cluster with kind
+        uses: helm/kind-action@v1.4.0
+
+      - name: Wait for Deployment to be ready
+        run: kubectl wait --timeout=180s --for=condition=Available deployment/rps-deployment
+
+      - name: Get Pod name
+        id: get_pod
+        run: echo "POD_NAME=$(kubectl get pod -l app=rps-app -o jsonpath='{.items[0].metadata.name}')" >> $GITHUB_ENV
+
+      - name: Run Functional Tests
+        run: kubectl exec $POD_NAME --pytest --cov=src --cov-report=xml tests/unit/
