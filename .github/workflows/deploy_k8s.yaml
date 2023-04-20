@@ -25,8 +25,8 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
       - name: Deploy RPS
-          env:
-             GHCR_TOKEN: ${{ secrets.gh_tok }}
+        env:
+          GHCR_TOKEN: ${{ secrets.gh_tok }}
         run: |
           echo 'apiVersion: v1
           kind: Secret
