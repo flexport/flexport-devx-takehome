@@ -26,7 +26,7 @@ jobs:
 
       - name: Deploy RPS
           env:
-             GHCR-TOKEN: ${{ secrets.gh_tok }}
+             GHCR_TOKEN: ${{ secrets.gh_tok }}
         run: |
           echo 'apiVersion: v1
           kind: Secret
@@ -34,7 +34,7 @@ jobs:
             name: ghcr-auth
           type: kubernetes.io/dockerconfigjson
           data:
-            .dockerconfigjson: '${{ secrets.GHCR-TOKEN }}'' > ghcr-auth-secret.yaml
+            .dockerconfigjson: '${{ secrets.GHCR_TOKEN }}'' > ghcr-auth-secret.yaml
           kubectl apply -f ghcr-auth-secret.yaml
           echo 'apiVersion: apps/v1
           kind: Deployment
