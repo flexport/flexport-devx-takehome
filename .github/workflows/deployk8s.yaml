@@ -45,7 +45,7 @@ jobs:
         run: |
           docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:local
           docker save ghcr.io/${{ github.repository }}:local -o image.tar
-          kind load image-archive image.tar --name test-cd
+          kind load image-archive image.tar --name kind-test-cd
 
       - name: Save Docker Image
         run: |
