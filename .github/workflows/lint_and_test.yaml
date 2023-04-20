@@ -26,7 +26,11 @@ jobs:
         run: black --check .
 
       - name: Lint Check with Pylint
-        run: pylint --fail-under=9 src
+        run: |
+          pylint --fail-under=9 src
+          pylint --fail-under=9 tests
 
       - name: Run Unit Tests
-        run: pytest --cov=src --cov-report=xml tests/unit/
+        run: |
+          pytest --cov=src --cov-report=xml tests/unit/
+          pytest --cov=src --cov-report=xml tests/functional/
