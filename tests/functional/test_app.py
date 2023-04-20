@@ -10,6 +10,7 @@ def test_rps():
     with app.test_client() as test_client:
         response = test_client.get("/health")
         assert response.status_code == 200
+        assert response.data.decode("utf-8") == "OK"
 
     with app.test_client() as test_client:
         response = test_client.post(
@@ -30,3 +31,11 @@ def test_rps():
             content_type="application/json",
         )
         assert response.status_code == 200
+
+    with app.test_client() as test_client:
+        response = test_client.post(
+            "/rps",
+            data=json.dumps(dict(move="dummyinvalidmove")),
+            content_type="application/json",
+        )
+        assert response.status_code != 200

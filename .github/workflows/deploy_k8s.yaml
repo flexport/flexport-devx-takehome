@@ -1,0 +1,46 @@
+name: Deploy to K8s
+
+on:
+  workflows: ["Build Docker Image"]
+  types:
+    - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Repository
+        uses: actions/checkout@v2
+
+      - name: Create K8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+
+      - name: Testing
+        run: |
+          kubectl wait nodes --for condition=Ready --all
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+
+      - name: Deploy RPS
+        run: |
+          kubectl create deployment my-app --image=ghcr.io/okhan98/flexport-devx-takehome:latest
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/my-app --type=NodePort --port 8080
+
+      - name: Run Integration Tests
+        run: pytest --cov=src --cov-report=xml tests/functional/
+
+      - name: Test Deployment
+        run: |
+          export NODE_PORT=$(kubectl get services/my-app -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
+          kubectl describe services/my-app
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec -ti $POD_NAME -- curl localhost:8080/version
+
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd
