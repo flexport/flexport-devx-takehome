@@ -59,6 +59,7 @@ jobs:
           kubectl config use-context kind-test-cd
           kubectl wait --for=condition=Ready pods --all --timeout=120s
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec $POD_NAME -- export PYTHONPATH="${PYTHON_PATH}:./src"
           kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/functional/
 
       - name: Cleanup
