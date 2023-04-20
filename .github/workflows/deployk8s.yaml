@@ -21,6 +21,20 @@ jobs:
       - name: Set up Helm and Kind
         uses: helm/kind-action@v1.2.0
 
+      - name: Log into ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.gh_tok }}
+
+      - name: Create Kubernetes Secret
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.gh_tok }}
+
       - name: Install and configure kubectl
         run: |
           VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
@@ -34,7 +48,7 @@ jobs:
 
       - name: Create Deployment
         run: |
-          kubectl create deployment rps-deployment --image=ghcr.io/omair-fp-rps-test
+          kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:${{ github.sha }}
           kubectl rollout status deployment/rps-deployment
 
       - name: Set Pod Name
