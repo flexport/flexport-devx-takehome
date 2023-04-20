@@ -26,15 +26,15 @@ jobs:
 
       - name: Deploy Application
         run: |
-          kubectl create deployment kubernetes-bootcamp --image=${{ env.DOCKER_IMAGE }}
+          kubectl create deployment rps-deployment --image=${{ env.DOCKER_IMAGE }}
           kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/kubernetes-bootcamp --type=NodePort --port 8080
+          kubectl expose deployment/rps-deployment --type=NodePort --port 8080
 
       - name: Test Deployment
         run: |
-          export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+          export NODE_PORT=$(kubectl get services/rps-deployment -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/kubernetes-bootcamp
+          kubectl describe services/rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl exec -ti $POD_NAME -- curl localhost:8080/version
 
