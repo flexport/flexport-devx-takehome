@@ -1,0 +1,45 @@
+name: Deploy and Test on Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  workflow_run:
+    workflows: ['Build Docker Image']
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_image
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Helm and Kind
+        uses: helm/kind-action@v1.2.0
+
+      - name: Install and configure kubectl
+        run: |
+          VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+          curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
+            --progress-bar \
+            --location \
+            --remote-name
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+          kubectl version --client
+
+      - name: Create Deployment
+        run: |
+          kubectl create deployment rps-deployment --image=ghcr.io/okhan98/flexport-devx-takehome:${{ github.sha }}
+          kubectl rollout status deployment/rps-deployment
+
+      - name: Set Pod Name
+        run: export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+
+      - name: Run Functional Tests
+        run: kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/integration/
