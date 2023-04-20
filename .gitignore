@@ -130,3 +130,4 @@ dmypy.json
 .coverage
 .idea/
 .env
+my-app-deployment.yaml

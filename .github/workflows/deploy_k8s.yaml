@@ -25,19 +25,48 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
       - name: Deploy RPS
+          env:
+             GHCR_TOKEN: ${{ secrets.gh_tok}}
         run: |
-          kubectl create deployment my-app --image=ghcr.io/okhan98/flexport-devx-takehome:latest
+          echo 'apiVersion: v1
+          kind: Secret
+          metadata:
+            name: ghcr-auth
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: '${{ secrets.GHCR_TOKEN }}'' > ghcr-auth-secret.yaml
+          kubectl apply -f ghcr-auth-secret.yaml
+          echo 'apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: rps-app
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: rps-app
+          template:
+            metadata:
+              labels:
+                app: rps-app
+            spec:
+              containers:
+              - name: rps-app
+                image: ghcr.io/your-username/your-repo-name:latest
+              imagePullSecrets:
+              - name: ghcr-auth' > rps-app-deployment.yaml
+          kubectl apply -f rps-app-deployment.yaml
           kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/my-app --type=NodePort --port 8080
+          kubectl expose deployment/rps-app --type=NodePort --port 8080
 
       - name: Run Integration Tests
         run: pytest --cov=src --cov-report=xml tests/functional/
 
       - name: Test Deployment
         run: |
-          export NODE_PORT=$(kubectl get services/my-app -o go-template='{{(index .spec.ports 0).nodePort}}')
+          export NODE_PORT=$(kubectl get services/rps-app -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/my-app
+          kubectl describe services/rps-app
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl exec -ti $POD_NAME -- curl localhost:8080/version
 
