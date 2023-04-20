@@ -1,5 +1,8 @@
 FROM python:3.10
 
+RUN useradd --create-home appuser
+USER appuser
+
 WORKDIR /app
 
 # COPY CODE TO /APP
