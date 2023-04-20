@@ -52,7 +52,7 @@ jobs:
             spec:
               containers:
               - name: rps-app
-                image: ghcr.io/your-username/your-repo-name:latest
+                image: ghcr.io/okhan98/flexport-devx-takehome:latest
               imagePullSecrets:
               - name: ghcr-auth' > rps-app-deployment.yaml
           kubectl apply -f rps-app-deployment.yaml
