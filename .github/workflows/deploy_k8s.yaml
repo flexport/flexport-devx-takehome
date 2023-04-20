@@ -33,7 +33,9 @@ jobs:
           export NODE_PORT=$(kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/my-service
-          pytest tests/integration/
+
+      - name: Run Integration Tests
+        run: pytest --cov=src --cov-report=xml tests/functional/
 
       - name: Cleanup
         if: always()
