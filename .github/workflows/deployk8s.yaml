@@ -55,8 +55,9 @@ jobs:
           kubectl rollout status deployment/rps-deployment
 
       - name: Set Pod Name
+        run: |
         kubectl config use-context kind-test-cd
-        run: export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+        export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
       - name: Run Functional Tests
         kubectl config use-context kind-test-cd
