@@ -52,6 +52,7 @@ jobs:
           kubectl config use-context kind-test-cd
           kubectl wait --for=condition=Ready pods --all --timeout=120s
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec $POD_NAME -- apt-get -y update && apt-get -y install curl
           kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/functional/
           kubectl exec $POD_NAME -- curl http://127.0.0.1:5000/health
           kubectl exec $POD_NAME -- curl -X POST -H 'Content-Type: application/json' http://127.0.0.1:5000/rps -d '{"move": "Rock"}'
