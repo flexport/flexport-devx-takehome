@@ -43,6 +43,7 @@ jobs:
 
       - name: Load Docker Image into Kind
         run: |
+          kubectl config use-context kind-test-cd
           docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:local
           docker save ghcr.io/${{ github.repository }}:local -o image.tar
           kind load image-archive image.tar --name kind-test-cd
@@ -66,4 +67,4 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          kind delete cluster --name test-cd
+          kind delete cluster --name kind-test-cd
