@@ -47,7 +47,7 @@ jobs:
           kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:local
           kubectl rollout status deployment/rps-deployment
 
-      - name: Run Functional Tests
+      - name: Run Integration Tests
         run: |
           kubectl config use-context kind-test-cd
           kubectl wait --for=condition=Ready pods --all --timeout=120s
