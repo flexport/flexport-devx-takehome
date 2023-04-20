@@ -1,0 +1,61 @@
+name: Deploy and Test on Kubernetes
+
+on:
+  workflow_run:
+    workflows: ['Build Docker Image']
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Helm and Kind
+        uses: helm/kind-action@v1.4.0
+        with:
+          cluster_name: test-cd
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log into ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.gh_tok }}
+
+      - name: Pull Docker Image
+        run: docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Load Docker Image into Kind
+        run: |
+          kubectl config use-context kind-test-cd
+          docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:local
+          docker save ghcr.io/${{ github.repository }}:local -o image.tar
+          kind load image-archive image.tar --name test-cd
+
+      - name: Create Deployment
+        run: |
+          kubectl config use-context kind-test-cd
+          kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:local
+          kubectl rollout status deployment/rps-deployment
+
+      - name: Run Integration Tests
+        run: |
+          kubectl config use-context kind-test-cd
+          kubectl wait --for=condition=Ready pods --all --timeout=120s
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/integration/
+
+      - name: Cleanup
+        if: always()
+        run: |
+          kubectl config use-context kind-test-cd
+          kind delete cluster --name test-cd
