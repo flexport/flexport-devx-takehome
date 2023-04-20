@@ -1,10 +1,16 @@
-import requests
+"""
+Tests for When RPS App is running
+"""
 
+import requests
 
 RPS_HOST = "http://127.0.0.1:5000"
 
 
 def check_result(user_choice, pc_choice, result, game_outcome):
+    """
+    Checks result of game for when RPS App is running
+    """
     if game_outcome == -1:
         assert result == f"I win, {pc_choice} beats {user_choice}"
     elif game_outcome == 0:
@@ -14,6 +20,9 @@ def check_result(user_choice, pc_choice, result, game_outcome):
 
 
 def test_endpoints():
+    """
+    Tests All Endpoints for when RPS App is running
+    """
     # Health Check
     health_reponse = requests.get(f"{RPS_HOST}/health")
     assert health_reponse.status_code == 200
