@@ -23,9 +23,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          pwd
-          ls -l
-          kubectl kustomize k8s | kubectl apply -f -
+          kubectl apply -f deployment.yaml
           kubectl rollout status deployment/my-deployment
         env:
           DOCKER_IMAGE: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_TAG }}
