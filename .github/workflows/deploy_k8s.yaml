@@ -1,4 +1,4 @@
-name: Deploy to K8s
+name: Deploy on K8s
 
 on:
   workflow_run:
@@ -7,68 +7,24 @@ on:
       - completed
 
 jobs:
-  deploy:
+  deploy_and_test:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create K8s Kind Cluster
-        uses: helm/kind-action@v1.4.0
+      - name: Set up kind (Kubernetes in Docker)
+        uses: engineerd/setup-kind@v1.4.0
 
-      - name: Testing
+      - name: Deploy to Kubernetes
         run: |
-          kubectl wait nodes --for condition=Ready --all
-          kubectl cluster-info
-          kubectl get pods -n kube-system
-          echo "current-context:" $(kubectl config current-context)
-          echo "environment-kubeconfig:" ${KUBECONFIG}
-
-      - name: Deploy RPS
+          kubectl kustomize k8s | kubectl apply -f -
+          kubectl rollout status deployment/my-deployment
         env:
-          GHCR_TOKEN: ${{ secrets.gh_tok }}
-        run: |
-          echo 'apiVersion: v1
-          kind: Secret
-          metadata:
-            name: ghcr-auth
-          type: kubernetes.io/dockerconfigjson
-          data:
-            .dockerconfigjson: '${{ secrets.GHCR_TOKEN }}'' > ghcr-auth-secret.yaml
-          kubectl apply -f ghcr-auth-secret.yaml
-          echo 'apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: rps-app
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: rps-app
-          template:
-            metadata:
-              labels:
-                app: rps-app
-            spec:
-              containers:
-              - name: rps-app
-                image: ghcr.io/okhan98/flexport-devx-takehome:latest
-              imagePullSecrets:
-              - name: ghcr-auth' > rps-app-deployment.yaml
-          kubectl apply -f rps-app-deployment.yaml
-          kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/rps-app --type=NodePort --port 8080
+          DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      - name: Run Integration Tests
+      - name: Run integration tests
         run: pytest --cov=src --cov-report=xml tests/functional/
-
-      - name: Test Deployment
-        run: |
-          export NODE_PORT=$(kubectl get services/rps-app -o go-template='{{(index .spec.ports 0).nodePort}}')
-          echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/rps-app
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec -ti $POD_NAME -- curl localhost:8080/version
 
       - name: Cleanup
         if: always()
