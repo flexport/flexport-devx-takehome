@@ -20,7 +20,8 @@ jobs:
           python-version: '3.9'
 
       - name: Install Requirements
-        run: pip3 install black pylint pytest pytest-cov
+        run: pip3 install -r requirements.txt
+
 
       - name: Code Format Check With Black
         run: black --check .
