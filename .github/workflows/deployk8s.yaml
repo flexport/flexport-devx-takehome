@@ -34,7 +34,7 @@ jobs:
 
       - name: Create Deployment
         run: |
-          kubectl create deployment rps-deployment --image=ghcr.io/okhan98/flexport-devx-takehome:${{ github.sha }}
+          kubectl create deployment rps-deployment --image=ghcr.io/omair-fp-rps-test
           kubectl rollout status deployment/rps-deployment
 
       - name: Set Pod Name
