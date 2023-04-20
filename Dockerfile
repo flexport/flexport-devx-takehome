@@ -1,6 +1,6 @@
 FROM python:3.10
 
-RUN useradd --create-home appuser
+RUN groupadd -r appgroup && useradd --no-log-init -r -g appgroup appuser
 USER appuser
 
 WORKDIR /app
