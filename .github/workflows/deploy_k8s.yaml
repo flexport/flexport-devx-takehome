@@ -7,10 +7,7 @@ on:
       - completed
 
 env:
-  DOCKER_REGISTRY: ghcr.io
-  DOCKER_REPOSITORY: ${{ github.repository_owner }}/${{ github.repository_name }}
-  DOCKER_TAG: ${{ github.sha }}
-  DOCKER_IMAGE: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_TAG }}
+  DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ github.sha }}
 
 jobs:
   kind:
