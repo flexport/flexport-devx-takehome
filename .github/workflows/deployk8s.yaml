@@ -56,8 +56,6 @@ jobs:
           kubectl exec $POD_NAME -- curl http://127.0.0.1:5000/health
           kubectl exec $POD_NAME -- curl -X POST -H 'Content-Type: application/json' http://127.0.0.1:5000/rps -d '{"move": "Rock"}'
 
-
-
       - name: Cleanup
         if: always()
         run: |

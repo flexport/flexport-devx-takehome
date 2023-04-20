@@ -22,7 +22,6 @@ jobs:
       - name: Install Requirements
         run: pip3 install -r requirements.txt
 
-
       - name: Code Format Check With Black
         run: black --check .
 
