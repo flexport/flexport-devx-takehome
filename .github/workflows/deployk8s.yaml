@@ -48,23 +48,22 @@ jobs:
           docker save ghcr.io/${{ github.repository }}:local -o image.tar
           kind load image-archive image.tar --name test-cd
 
-      - name: Save Docker Image
-        run: |
-          docker save ghcr.io/${{ github.repository }}:local -o image.tar
-          kind load image-archive image.tar
-
       - name: Create Deployment
         run: |
+          kubectl config use-context kind-test-cd
           kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:local
           kubectl rollout status deployment/rps-deployment
 
       - name: Set Pod Name
+        kubectl config use-context kind-test-cd
         run: export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
       - name: Run Functional Tests
+        kubectl config use-context kind-test-cd
         run: kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/functional/
 
       - name: Cleanup
         if: always()
         run: |
+          kubectl config use-context kind-test-cd
           kind delete cluster --name test-cd
