@@ -1,9 +1,5 @@
 FROM python:3.9-slim
 
-USER root
-
-RUN apt-get -y update; apt-get -y install curl
-
 WORKDIR /app
 
 # COPY CODE TO /APP
