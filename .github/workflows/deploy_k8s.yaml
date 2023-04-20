@@ -10,31 +10,38 @@ env:
   DOCKER_REGISTRY: ghcr.io
   DOCKER_REPOSITORY: ${{ github.repository_owner }}/${{ github.repository_name }}
   DOCKER_TAG: ${{ github.sha }}
+  DOCKER_IMAGE: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_TAG }}
 
 jobs:
-  deploy:
+  kind:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Kind (Kubernetes in Docker)
+      - uses: actions/checkout@v3
+      - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
-
-      - name: Deploy to Kubernetes
+      - name: Testing
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl rollout status deployment/my-deployment
-        env:
-          DOCKER_IMAGE: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_TAG }}
+          kubectl wait nodes --for condition=Ready --all
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+
+      - name: Deploy Application
+        run: |
+          kubectl create deployment kubernetes-bootcamp --image=${{ env.DOCKER_IMAGE }}
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/kubernetes-bootcamp --type=NodePort --port 8080
 
       - name: Test Deployment
         run: |
-          export NODE_PORT=$(kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
+          export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/my-service
+          kubectl describe services/kubernetes-bootcamp
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl exec -ti $POD_NAME -- curl localhost:8080/version
 
-      - name: Run Integration Tests
+      - name: Run Unit Tests
         run: pytest --cov=src --cov-report=xml tests/functional/
 
       - name: Cleanup
