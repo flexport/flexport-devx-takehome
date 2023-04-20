@@ -1,7 +1,6 @@
 FROM python:3.10
 
-RUN groupadd -r appgroup && useradd --no-log-init -r -g appgroup appuser
-USER appuser
+RUN apt-get -y update && apt-get -y install curl
 
 WORKDIR /app
 
