@@ -6,14 +6,35 @@ on:
     types:
       - completed
 
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_REPOSITORY: ${{ github.repository_owner }}/${{ github.repository_name }}
+  DOCKER_TAG: ${{ github.sha }}
+
 jobs:
-  deploy_and_test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up kind (Kubernetes in Docker)
+      - name: Build Docker image
+        run: |
+          docker build -t $DOCKER_REGISTRY/$DOCKER_REPOSITORY:$DOCKER_TAG .
+          docker push $DOCKER_REGISTRY/$DOCKER_REPOSITORY:$DOCKER_TAG
+
+      - name: Run integration tests
+        run: |
+          pytest --cov=src --cov-report=xml tests/functional/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Kind (Kubernetes in Docker)
         uses: helm/kind-action@v1.4.0
 
       - name: Deploy to Kubernetes
@@ -21,10 +42,14 @@ jobs:
           kubectl kustomize k8s | kubectl apply -f -
           kubectl rollout status deployment/my-deployment
         env:
-          DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          DOCKER_IMAGE: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_TAG }}
 
-      - name: Run integration tests
-        run: pytest --cov=src --cov-report=xml tests/functional/
+      - name: Test Deployment
+        run: |
+          export NODE_PORT=$(kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
+          kubectl describe services/my-service
+          pytest tests/integration/
 
       - name: Cleanup
         if: always()
