@@ -28,31 +28,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.gh_tok }}
 
-      - name: Create Kubernetes Secret
-        run: |
-          kubectl create secret docker-registry ghcr-secret \
-            --docker-server=ghcr.io \
-            --docker-username=${{ github.actor }} \
-            --docker-password=${{ secrets.gh_tok }}
+      - name: Pull Docker Image
+        uses: docker/pull-action@v1
+        with:
+          context: .
+          images: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      - name: Install and configure kubectl
+      - name: Tag Docker Image
+        run: docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:local
+
+      - name: Save Docker Image
         run: |
-          VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-          curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
-            --progress-bar \
-            --location \
-            --remote-name
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-          kubectl version --client
+          docker save ghcr.io/${{ github.repository }}:local -o image.tar
+          kind load image-archive image.tar
 
       - name: Create Deployment
         run: |
-          kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          kubectl create deployment rps-deployment --image=ghcr.io/${{ github.repository }}:local
           kubectl rollout status deployment/rps-deployment
 
       - name: Set Pod Name
         run: export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
       - name: Run Functional Tests
-        run: kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/integration/
+        run: kubectl exec $POD_NAME -- pytest --cov=src --cov-report=xml tests/functional/
+
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd
