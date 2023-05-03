@@ -7,7 +7,7 @@ on:
       - feat/docker_build
 
 env:
-  IMAGE_NAME: ghcr.io/Ritika-14/flexport-devx-takehome
+  IMAGE_NAME: ghcr.io/ritika-14/flexport-devx-takehome
 
 jobs:
   build-and-push:
