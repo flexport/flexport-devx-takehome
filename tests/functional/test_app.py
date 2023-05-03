@@ -74,3 +74,10 @@ def test_rps():
             content_type="application/json",
         )
         assert response.status_code == 200
+    with app.test_client() as test_client:
+        response = test_client.post(
+            "/rps",
+            data=json.dumps({"move": "Scissors"}),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
