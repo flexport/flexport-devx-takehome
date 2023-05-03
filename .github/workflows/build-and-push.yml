@@ -7,11 +7,17 @@ on:
       - feat/docker_build
 
 env:
-  IMAGE_NAME: ghcr.io/ritika-14/flexport-devx-takehome-1
+  IMAGE_NAME: ghcr.io/ritika-14/flexport-devx-takehome
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ritika-14/flexport-devx-takehome
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GHRC_TOKEN}}
+        
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
