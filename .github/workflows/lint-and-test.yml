@@ -1,0 +1,19 @@
+name: Lint and Test
+on:
+  push:
+    branches: [main, feat/docker_workflow]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: pip install pylint black pytest
+    - name: Run black pylint pytest
+      run: |
+        black src/rock_paper_scissors
+        pylint src/rock_paper_scissors
+    - name: Run pytest
+      run: |
+      export PYTHONPATH=src
+      pytest
