@@ -12,11 +12,12 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -U -r requirements.txt
         pip install pylint black pytest
+        pip install pytest-cov
     - name: Run black pylint pytest
       run: |
         black src/rock_paper_scissors
         pylint src/rock_paper_scissors
-    - name: Run pytest
+    - name: Run pytest with coverage
       run: |
         export PYTHONPATH=src
-        pytest
+        pytest --cov src --cov-report term-missing
