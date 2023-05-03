@@ -12,11 +12,6 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    container:
-      image: $IMAGE_NAME
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GHRC_TOKEN}}
 
     steps:
       - name: Checkout code
