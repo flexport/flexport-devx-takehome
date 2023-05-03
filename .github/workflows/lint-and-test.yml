@@ -15,5 +15,5 @@ jobs:
         pylint src/rock_paper_scissors
     - name: Run pytest
       run: |
-      export PYTHONPATH=src
-      pytest
+        export PYTHONPATH=src
+        pytest
