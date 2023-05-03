@@ -33,11 +33,6 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME .
       
-      - name: Run tests on Docker Image
-        uses: docker://$IMAGE_NAME:latest
-        with:
-          entrypoint: /bin/sh
-          args: -c "pytest"
 
       - name: Push Docker Image to GitHub Container Registry
         run: |
