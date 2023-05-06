@@ -4,11 +4,11 @@ on:
     workflows: ["Docker Build, Test, and Publish"]
     types: 
       - completed
-on:
-  push:
-    branches:
-      - main
-      - feat/kubernetes
+# on:
+#   push:
+#     branches:
+#       - main
+#       - feat/kubernetes
 
 
 jobs:
