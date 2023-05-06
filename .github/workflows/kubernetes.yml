@@ -8,7 +8,7 @@ on:
     result: success
 
 jobs:
-  deploy-to-kind:
+  kind:
     runs-on: ubuntu-latest
     needs: build-test-publish
     env:
