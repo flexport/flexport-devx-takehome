@@ -16,7 +16,7 @@ jobs:
       id: docker_meta
       uses: crazy-max/ghaction-docker-meta@v1
       with:
-        images: ghcr.io/ritika-14/newimage1
+        images: ghcr.io/ritika-14/docker-image
         tag-sha: false
         tag-edge: false
         tag-latest: true
