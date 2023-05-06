@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - feat/kubernetes
       
 jobs:
   build-test-publish:
@@ -16,7 +17,7 @@ jobs:
       uses: crazy-max/ghaction-docker-meta@v1
       with:
         images: ghcr.io/ritika-14/newimage1
-        tag-sha: true
+        tag-sha: false
         tag-edge: false
         tag-latest: true
 

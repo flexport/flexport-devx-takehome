@@ -1,0 +1,25 @@
+# name: Docker Build, Test, and Publish
+# on:
+#   push:
+#     branches:
+#       - main
+#       - feat/kubernetes
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+#       - name: Build Docker image
+#         run: docker build -t ghcr.io/ritika-14/flexport-devx-takehome:latest .
+#       - name: Test Docker image
+#         run: |
+#             export PYTHONPATH=src
+#             docker run ghcr.io/ritika-14/flexport-devx-takehome:latest pytest
+#       - name: Publish Docker image
+#         uses: docker/login-action@v1
+#         with:
+#           registry: ghcr.io
+#           username: ${{github.actor}}
+#           password: ${{secrets.GHRC_TOKEN}}
+#       - run: docker push ghcr.io/ritika-14/flexport-devx-takehome:latest
