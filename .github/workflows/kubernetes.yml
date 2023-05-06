@@ -6,9 +6,9 @@ on:
       - feat/kubernetes
 
 jobs:
-  kind:
+  deploy-to-kind:
     runs-on: ubuntu-latest
-    needs: Docker Build, Test, and Publish
+    needs: build-test-publish
     env:
       DEBIAN_FRONTEND: noninteractive
     steps:
