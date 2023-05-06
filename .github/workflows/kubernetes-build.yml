@@ -1,7 +1,7 @@
 name: "Deliver application to Kubernetes cluster using Kind"
 on: 
   workflow_run:
-    workflows: [build-test-publish]
+    workflows: ["Docker Build, Test, and Publish"] 
     types: 
       - completed
 
