@@ -5,6 +5,7 @@ on:
     branches: [feat/kubernetes]
     types: 
       - completed
+    result: success
 
 jobs:
   deploy-to-kind:
