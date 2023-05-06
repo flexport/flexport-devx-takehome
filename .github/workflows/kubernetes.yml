@@ -1,9 +1,10 @@
 name: "Deliver application to Kubernetes cluster using Kind"
 on: 
-  push: 
-    branches: 
-      - kind
-      - feat/kubernetes
+  workflow_run:
+    workflows: ["Docker Build, Test, and Publish"]
+    branches: [feat/kubernetes]
+    types: 
+      - completed
 
 jobs:
   deploy-to-kind:
