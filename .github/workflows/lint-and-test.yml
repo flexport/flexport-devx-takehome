@@ -112,8 +112,11 @@ jobs:
           kubectl exec -ti $POD_NAME -- apt-get update
           kubectl exec -ti $POD_NAME -- apt-get -y install curl
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
+          kubectl exec -ti $POD_NAME -- sh -c 'PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest --cov tests/functional --cov-report term-missing'
+
       - name: Cleanup
         if: always()
         run: |
           kind delete cluster --name test-cd
+
   
