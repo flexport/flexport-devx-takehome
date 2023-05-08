@@ -24,12 +24,12 @@ jobs:
     - name: Run Unit Tests with coverage
       run: |
         export PYTHONPATH=src
-        pytest -v tests/unit
+        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
         pytest --cov tests/unit --cov-report term-missing
     - name: Run Functional Tests with coverage
       run: |
         export PYTHONPATH=src
-        pytest -v tests/functional
+        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
         pytest --cov tests/functional --cov-report term-missing
   build-test-publish:
     runs-on: ubuntu-latest
