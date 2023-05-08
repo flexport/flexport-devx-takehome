@@ -92,8 +92,8 @@ jobs:
         # tags: ${{steps.docker_meta.outputs.tags}}
         # file: ./Dockerfile
         tags: |
-          ${{ env.GITHUB_REPOSITORY }}/docker-image:latest
-          ${{ env.GITHUB_REPOSITORY }}/docker-image:${{ github.sha }}
+          ghcr.io/${{ env.GITHUB_REPOSITORY }}/docker-image:latest
+          ghcr.io/${{ env.GITHUB_REPOSITORY }}/docker-image:${{ github.sha }}
   kind-deploy:
     runs-on: ubuntu-latest
     needs: build-test-publish
