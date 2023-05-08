@@ -16,6 +16,7 @@ jobs:
         python -m pip install -U -r requirements.txt
         pip install pylint black pytest
         pip install pytest-cov
+        export URL=http://localhost:5000
     - name: Run black and pylint
       run: |
         black ./
@@ -28,7 +29,7 @@ jobs:
     - name: Run Functional Tests with coverage
       run: |
         export PYTHONPATH=src
-        pytest -v tests/unit
+        pytest -v tests/functional
         pytest --cov tests/functional --cov-report term-missing
   build-test-publish:
     runs-on: ubuntu-latest
