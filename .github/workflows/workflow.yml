@@ -82,8 +82,8 @@ jobs:
         # tags: ${{steps.docker_meta.outputs.tags}}
         # file: ./Dockerfile
         tags: |
-          ${{ github.actor }}/docker-image:latest
-          ${{ github.actor }}/docker-image:${{ github.sha }}
+          ${GITHUB_REPOSITORY}/flask-app:latest
+          ${GITHUB_REPOSITORY}/flask-app:${{ github.sha }}
   kind-deploy:
     runs-on: ubuntu-latest
     needs: build-test-publish
