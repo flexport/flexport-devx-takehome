@@ -36,14 +36,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Docker meta
-      id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v1
-      with:
-        images: ghcr.io/ritika-14/docker-image
-        tag-sha: false
-        tag-edge: false
-        tag-latest: true
+    # - name: Docker meta
+    #   id: docker_meta
+    #   uses: crazy-max/ghaction-docker-meta@v1
+    #   with:
+    #     images: ghcr.io/ritika-14/docker-image
+    #     tag-sha: false
+    #     tag-edge: false
+    #     tag-latest: true
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -58,13 +58,13 @@ jobs:
         username: ${{github.actor}}
         password: ${{secrets.GHCR_TOKEN}}
 
-    - name: Build and test Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: false
-        tags: ${{steps.docker_meta.outputs.tags}}
-        file: ./Dockerfile
+    # - name: Build and test Docker image
+    #   uses: docker/build-push-action@v4
+    #   with:
+    #     context: .
+    #     push: false
+    #     tags: ${{steps.docker_meta.outputs.tags}}
+    #     file: ./Dockerfile
 
     - name: Setup Python environment
       uses: actions/setup-python@v3
@@ -79,8 +79,11 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{steps.docker_meta.outputs.tags}}
-        file: ./Dockerfile
+        # tags: ${{steps.docker_meta.outputs.tags}}
+        # file: ./Dockerfile
+        tags: |
+          ${{ github.actor }}/docker-image:latest
+          ${{ github.actor }}/docker-image:${{ github.sha }}
   kind-deploy:
     runs-on: ubuntu-latest
     needs: build-test-publish
@@ -99,7 +102,8 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy Application
         run: |
-          kubectl create deployment my-deployment --image=ghcr.io/ritika-14/docker-image:feat-kubernetes@sha256:c1e214a64898a2a50764ee16509e32829e3d0461d2a393dd2d5e405dbb6ccc9e
+          # kubectl create deployment my-deployment --image=ghcr.io/ritika-14/docker-image:feat-kubernetes@sha256:c1e214a64898a2a50764ee16509e32829e3d0461d2a393dd2d5e405dbb6ccc9e
+          kubectl create deployment my-deployment --image=${{ github.actor }}/docker-image:latest
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/my-deployment --type=NodePort --port 5000
           kubectl apply -f ./kind-cluster/service.yaml

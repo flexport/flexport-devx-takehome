@@ -8,9 +8,9 @@ import requests
 URL = os.environ["URL"]
 
 
-def test_health():  # pylint: disable=W3101
+def test_health(): 
     """
-    Testing the /health endpoint
+    Test the /health endpoint
     """
     response = requests.get(f"{URL}/health", timeout=60)
     assert response.status_code == 200
@@ -19,7 +19,7 @@ def test_health():  # pylint: disable=W3101
 
 def test_rps():
     """
-    Testing deployed application for Rock Paper Scissors..
+    Test deployed application
     """
     res = requests.post(URL + "/rps", json={"move": "rock"}, timeout=60)
     assert res.status_code == 200
