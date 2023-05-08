@@ -23,10 +23,12 @@ jobs:
         pylint **/*.py
     - name: Run Unit Tests with coverage
       run: |
-        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
+        PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/unit
     - name: Run Functional Tests with coverage
       run: |
-        PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
+        PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/functional
+    - name: Get coverage report
+      run: coverage report -m
   build-test-publish:
     runs-on: ubuntu-latest
     needs: lint
@@ -115,8 +117,8 @@ jobs:
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
           kubectl port-forward service/my-service 5000:5000 > /dev/null &
           export URL=http://localhost:5000
-          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/integration
-
+          PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/integration
+          coverage report -m
       - name: Cleanup
         if: always()
         run: |
