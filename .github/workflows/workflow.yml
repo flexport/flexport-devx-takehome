@@ -82,8 +82,8 @@ jobs:
         # tags: ${{steps.docker_meta.outputs.tags}}
         # file: ./Dockerfile
         tags: |
-          ${GITHUB_REPOSITORY}/flask-app:latest
-          ${GITHUB_REPOSITORY}/flask-app:${{ github.sha }}
+          ${{ github.repository }}/docker-image:latest
+          ${{ github.repository }}/docker-image:${{ github.sha }}
   kind-deploy:
     runs-on: ubuntu-latest
     needs: build-test-publish
@@ -103,7 +103,7 @@ jobs:
       - name: Deploy Application
         run: |
           # kubectl create deployment my-deployment --image=ghcr.io/ritika-14/docker-image:feat-kubernetes@sha256:c1e214a64898a2a50764ee16509e32829e3d0461d2a393dd2d5e405dbb6ccc9e
-          kubectl create deployment my-deployment --image=${{ github.actor }}/docker-image:latest
+          kubectl create deployment my-deployment --image=${{ github.repository }}/docker-image:latest
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/my-deployment --type=NodePort --port 5000
           kubectl apply -f ./kind-cluster/service.yaml
