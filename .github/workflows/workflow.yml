@@ -110,8 +110,7 @@ jobs:
           kubectl exec -ti $POD_NAME -- apt-get -y install curl
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
           export URL=http://localhost:5000
-          pytest tests/integration
-          pytest --cov tests/integration --cov-report term-missing
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/integration
 
       - name: Cleanup
         if: always()
