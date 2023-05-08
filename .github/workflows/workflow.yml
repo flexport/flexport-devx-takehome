@@ -16,15 +16,20 @@ jobs:
         python -m pip install -U -r requirements.txt
         pip install pylint black pytest
         pip install pytest-cov
-    - name: Run black pylint pytest
+    - name: Run black and pylint
       run: |
-        black src/rock_paper_scissors
-        pylint src/rock_paper_scissors
-    - name: Run pytest with coverage
+        black --check ./
+        pylint **/*.py
+    - name: Run Unit Tests with coverage
       run: |
         export PYTHONPATH=src
         pytest -v tests/unit
         pytest --cov tests/unit --cov-report term-missing
+    - name: Run Functional Tests with coverage
+      run: |
+        export PYTHONPATH=src
+        pytest -v tests/unit
+        pytest --cov tests/functional --cov-report term-missing
   build-test-publish:
     runs-on: ubuntu-latest
     needs: lint
@@ -82,7 +87,7 @@ jobs:
         push: true
         tags: ${{steps.docker_meta.outputs.tags}}
         file: ./Dockerfile
-  kind:
+  kind-deploy:
     runs-on: ubuntu-latest
     needs: build-test-publish
     steps:
@@ -112,7 +117,9 @@ jobs:
           kubectl exec -ti $POD_NAME -- apt-get update
           kubectl exec -ti $POD_NAME -- apt-get -y install curl
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
-          kubectl exec -ti $POD_NAME -- sh -c 'PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest --cov tests/functional --cov-report term-missing'
+          export URL=http://localhost:5000
+          pytest tests/integration
+          pytest --cov tests/integration --cov-report term-missing
 
       - name: Cleanup
         if: always()
