@@ -101,6 +101,10 @@ jobs:
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/my-deployment --type=NodePort --port 8080
           kubectl apply -f ./kind-cluster/service.yaml
+      - name: Install dep for Integration Testing
+        run: |
+          pip install pytest
+          pip install pytest-cov
       - name: Test Deployment
         run: |
           export NODE_PORT=$(kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
