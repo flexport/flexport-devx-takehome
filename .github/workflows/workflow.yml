@@ -23,9 +23,9 @@ jobs:
         pylint **/*.py
     - name: Run Unit Tests with coverage
       run: |
-        export PYTHONPATH=src
+        # export PYTHONPATH=src
         PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
-        pytest --cov tests/unit --cov-report term-missing
+        # pytest --cov tests/unit --cov-report term-missing
     - name: Run Functional Tests with coverage
       run: |
         export PYTHONPATH=src
