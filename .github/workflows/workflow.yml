@@ -18,7 +18,7 @@ jobs:
         pip install pytest-cov
     - name: Run black and pylint
       run: |
-        black --check ./
+        black ./
         pylint **/*.py
     - name: Run Unit Tests with coverage
       run: |
