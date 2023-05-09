@@ -1,9 +1,7 @@
-name: Build Image
+name: Build Docker Image
 on:
-  push:
-    branches: [main]
   workflow_run:
-    workflows: ["Lint, Build, Test and Deploy"]
+    workflows: ["Lint and Test"]
     types:
       - completed
 
