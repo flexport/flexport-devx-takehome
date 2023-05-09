@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: ghcr.io/ritika-14/ghcr.io/ritika-14/docker-image:feat-kubernetes@sha256:c1e214a64898a2a50764ee16509e32829e3d0461d2a393dd2d5e405dbb6ccc9e
+          ports:
+            - containerPort: 8080
+            
