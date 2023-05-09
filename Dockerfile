@@ -1,4 +1,4 @@
-FROM python:3.10.8-slim-buster
+FROM python:3.10
 
 # RUN apk add --no-cache python3-dev \
 # && pip3 install --upgrade pip
