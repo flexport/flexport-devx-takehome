@@ -1,7 +1,7 @@
 name: Deploy Kubernetes Cluster
 on:
   push:
-    branches: [feat/kubernetes]
+    branches: [main]
   workflow_run:
     workflows: ["Build Image"]
     types:
