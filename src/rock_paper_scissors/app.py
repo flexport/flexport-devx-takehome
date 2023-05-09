@@ -15,7 +15,7 @@
 """
 import json
 
-# pylint: disable = import-error
+
 from flask import Flask, request
 
 from .rps import rock_paper_scissors
@@ -64,6 +64,3 @@ def rps():
         {"result": result, "game_result": game_result, "pc_choice": pc_choice}
     )
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)

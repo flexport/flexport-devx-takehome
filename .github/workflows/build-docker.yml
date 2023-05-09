@@ -1,11 +1,14 @@
-name: Docker Build, Test, and Publish
+name: Build Image
 on:
   push:
-    branches:
-      - main
-      
+    branches: [feat/kubernetes]
+  workflow_run:
+    workflows: ["Lint, Build, Test and Deploy"]
+    types:
+      - completed
+
 jobs:
-  build-test-publish:
+  build-image:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -15,8 +18,8 @@ jobs:
       id: docker_meta
       uses: crazy-max/ghaction-docker-meta@v1
       with:
-        images: ghcr.io/ritika-14/newimage1
-        tag-sha: true
+        images: ghcr.io/ritika-14/docker-image
+        tag-sha: false
         tag-edge: false
         tag-latest: true
 
@@ -31,7 +34,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{github.actor}}
-        password: ${{secrets.GHRC_TOKEN}}
+        password: ${{secrets.GHCR_TOKEN}}
 
     - name: Build and test Docker image
       uses: docker/build-push-action@v4
@@ -49,11 +52,6 @@ jobs:
     - name: Install dependencies
       run: python -m pip install -U -r requirements.txt
 
-    - name: Run tests
-      run: |
-        export PYTHONPATH=src
-        pytest
-
     - name: Publish Docker image
       uses: docker/build-push-action@v4
       with:
@@ -61,4 +59,3 @@ jobs:
         push: true
         tags: ${{steps.docker_meta.outputs.tags}}
         file: ./Dockerfile
-        
