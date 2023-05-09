@@ -1,5 +1,7 @@
 name: Build Image
 on:
+  push:
+    branches: [feat/kubernetes]
   workflow_run:
     workflows: ["Lint, Build, Test and Deploy"]
     types:
