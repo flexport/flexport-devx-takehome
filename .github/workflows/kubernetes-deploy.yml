@@ -1,0 +1,53 @@
+name: Deploy Kubernetes Cluster
+on:
+  push:
+    branches: [feat/kubernetes]
+  workflow_run:
+    workflows: ["Build Image"]
+    types:
+      - completed
+
+jobs:
+  kind-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+        with:
+          config: ./kind-cluster/config.yaml
+      - name: Testing
+        run: |
+          kubectl wait nodes --for condition=Ready --all
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+      - name: Deploy Application
+        run: |
+          kubectl create deployment my-deployment --image=ghcr.io/ritika-14/docker-image:feat-kubernetes@sha256:c1e214a64898a2a50764ee16509e32829e3d0461d2a393dd2d5e405dbb6ccc9e
+          kubectl wait pods --for condition=Ready --timeout=90s --all
+          kubectl expose deployment/my-deployment --type=NodePort --port 5000
+          kubectl apply -f ./kind-cluster/service.yaml
+      - name: Install dep for Integration Testing
+        run: |
+          pip install pytest
+          pip install pytest-cov
+      - name: Test Deployment
+        run: |
+          export NODE_PORT=$(kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
+          echo NODE_PORT=${NODE_PORT}
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | tail -1 )
+          kubectl exec -ti $POD_NAME -- apt-get update
+          kubectl exec -ti $POD_NAME -- apt-get -y install curl
+          kubectl exec -ti $POD_NAME -- curl localhost:5000/health
+          kubectl port-forward service/my-service 5000:5000 > /dev/null &
+          export URL=http://localhost:5000
+          PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/integration
+          coverage report -m
+      - name: Cleanup
+        if: always()
+        run: |
+          kind delete cluster --name test-cd
+
+  
