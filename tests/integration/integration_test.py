@@ -23,3 +23,6 @@ def test_rps():
     """
     res = requests.post(URL + "/rps", json={"move": "rock"}, timeout=60)
     assert res.status_code == 200
+
+    res = requests.post(URL + "/rps", json={}, timeout=60)
+    assert res.status_code == 500
