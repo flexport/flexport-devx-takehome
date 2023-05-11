@@ -22,7 +22,7 @@ jobs:
      - name: Check formating of code using black
        run: |
           # Installing black using pip
-          pip install black
+          # pip install black
           # Checking for formating of code in current folder
           black --check ./
      - name: Linting the python code with pylint 
