@@ -21,8 +21,6 @@ jobs:
           pip install -r requirements.txt
      - name: Linting the python code with pylint 
        run: |
-          # Installing pylint using pip
-          pip install pylint.
           # Checking for formating of code in current folder
           pylint **/*.py     
      - name: Check formating of code using black
