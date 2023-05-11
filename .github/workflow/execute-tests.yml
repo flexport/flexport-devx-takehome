@@ -1,0 +1,57 @@
+name: Setting up python, pylint,black and executing unit  and functional tests for workflow
+
+on: [pull_request, push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip          
+          pip install -r requirements.txt
+      - name: Check formating of code using black
+        run: |
+          # Installing black using pip
+          pip install black.
+          # Checking for formating of code in current folder
+          black --check .
+      - name: Linting the python code with pylint 
+        run: |
+          # Installing pylint using pip
+          pip install pylint.
+          # Checking for formating of code in current folder
+          pylint **/*.py
+      - name: Executing unit test against the python code  
+        run: |
+          # Running unit tests under tests/unit/ folder
+          python -m pytest --import-mode=append tests/unit/
+       
+       - name: Getting code code coverage for unit tests
+        run: |
+          # Getting code coverage for unit tests under tests/unit/ folder
+          python -m pytest --import-mode=append tests/unit/ --cov
+          
+        - name: Executing functional test against the python code  
+        run: |
+          # Running unit tests under tests/functional/ folder
+          python -m pytest --import-mode=append tests/functional/
+       
+        - name: Getting code code coverage for functional tests
+        run: |
+          # Running unit tests under tests/functional/ folder
+          python -m pytest --import-mode=append tests/functional/ --cov
+
+        - name: Generating coverage report 
+        run: |
+          coverage report -m
