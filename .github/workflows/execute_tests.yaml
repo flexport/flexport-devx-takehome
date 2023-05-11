@@ -21,6 +21,7 @@ jobs:
           pip install -r requirements.txt
      - name: Check formating of code using black
        run: |
+          pip install black
           # Checking for formating of code in current folder
           black --check ./
      - name: Linting the python code with pylint 
