@@ -2,7 +2,8 @@ name: Setting up python, pylint,black and executing unit and functional tests fo
 
 on: [pull_request, push]
 
-permissions: read-all|write-all
+permissions:
+  contents: read|write
 
 jobs:
   build:
