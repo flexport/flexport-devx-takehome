@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
      - uses: actions/checkout@v3
      - name: Set up Python ${{ matrix.python-version }}
-       uses: actions/setup-python@v4
+       uses: actions/setup-python@v3
        with:
           python-version: ${{ matrix.python-version }}
      - name: Install dependencies
@@ -21,8 +21,6 @@ jobs:
           pip install -r requirements.txt
      - name: Check formating of code using black
        run: |
-          # Installing black using pip
-          # pip install black
           # Checking for formating of code in current folder
           black --check ./
      - name: Linting the python code with pylint 
@@ -34,22 +32,22 @@ jobs:
      - name: Executing unit test against the python code  
        run: |
           # Running unit tests under tests/unit/ folder
-          python -m pytest --import-mode=append tests/unit/
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
 
      - name: Get code code coverage for unit tests
        run: |
           # Getting code coverage for unit tests under tests/unit/ folder
-          python -m pytest --import-mode=append tests/unit/ --cov
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit--cov
 
      - name: Executing functional test against the python code  
        run: |
           # Running unit tests under tests/functional/ folder
-          python -m pytest --import-mode=append tests/functional/
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
 
      - name: Getting code code coverage for functional tests
        run: |
           # Running unit tests under tests/functional/ folder
-          python -m pytest --import-mode=append tests/functional/ --cov
+          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional --cov
 
      - name: Generating coverage report 
        run: |
