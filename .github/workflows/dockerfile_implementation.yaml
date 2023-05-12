@@ -2,10 +2,10 @@ name: Build and publish docker image
 
 on:
   workflow_run:
-    workflows: ["Build"]
-    types: [requested]
-    branches:
-      - 'releases/**'
+    workflows: ["Setting up python, pylint,black and executing unit and functional tests for workflow"]
+    types: 
+      - completed
+   
 
 jobs:
   docker:
