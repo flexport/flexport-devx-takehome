@@ -1,6 +1,10 @@
-name: Create Cluster
+name: Deploying to Kubernates cluster
 
-on: pull_request
+on:
+  workflow_run:
+    workflows: ["Build and publish docker image"]
+    types: 
+      - completed
 
 jobs:
   create-cluster:
