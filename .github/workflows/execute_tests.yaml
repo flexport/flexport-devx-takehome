@@ -32,20 +32,20 @@ jobs:
           # Running unit tests under tests/unit/ folder
           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit
 
-     - name: Get code code coverage for unit tests
-       run: |
-          # Getting code coverage for unit tests under tests/unit/ folder
-          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit --cov
+#      - name: Get code code coverage for unit tests
+#        run: |
+#           # Getting code coverage for unit tests under tests/unit/ folder
+#           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/unit --cov
 
      - name: Executing functional test against the python code  
        run: |
           # Running unit tests under tests/functional/ folder
           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional
 
-     - name: Getting code code coverage for functional tests
-       run: |
-          # Running unit tests under tests/functional/ folder
-          PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional --cov
+#      - name: Getting code code coverage for functional tests
+#        run: |
+#           # Running unit tests under tests/functional/ folder
+#           PYTHONPATH="${PYTHON_PATH}:./src" python -m pytest -v tests/functional --cov
 
      - name: Generating coverage report 
        run: |
