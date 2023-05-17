@@ -51,4 +51,3 @@ def test_rps(mocker):
     game_result, pc_choice = rock_paper_scissors(2)
     assert game_result == 0
     assert pc_choice == 2
-
