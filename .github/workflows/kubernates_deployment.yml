@@ -1,4 +1,4 @@
-name: Deploying to Kubernates cluster
+name: Deploying to Kubernetes cluster
 
 on:
   workflow_run:
@@ -34,8 +34,8 @@ jobs:
           
       - name: Testing Deployment   
         run : |
-          kubectl get services/flexport-app
-          kubectl port-forward service/flexport-app 5000:5000
+          kubectl get services flexport-app
+          kubectl port-forward service/flexport-app 5000:5000 > /dev/null &
           
       - name: Run Coverage tests
         run : |
@@ -47,7 +47,7 @@ jobs:
         run : |
            coverage report -m
            
-      - name: Delete CLuster
+      - name: Delete Cluster
         run : |
            kind delete cluster --name flexport-app
             
