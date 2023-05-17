@@ -1,3 +1,4 @@
+import pytest
 from rock_paper_scissors.rps import rock_paper_scissors
 
 
