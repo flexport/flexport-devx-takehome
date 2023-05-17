@@ -23,7 +23,7 @@ def test_rps(mocker):
     assert pc_choice == 0
 
     # When pc chooses paper move
-    mocker.patch("rps.rock_paper_scissors.random.randint", return_value=1)
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=1)
 
     game_result, pc_choice = rock_paper_scissors(0)
     assert game_result == -1
@@ -38,7 +38,7 @@ def test_rps(mocker):
     assert pc_choice == 1
 
     # When pc chooses scissor move
-    mocker.patch("rps.rock_paper_scissors.random.randint", return_value=2)
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=2)
 
     game_result, pc_choice = rock_paper_scissors(0)
     assert game_result == 1
