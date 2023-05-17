@@ -16,4 +16,26 @@ jobs:
         uses: helm/kind-action@v1.4.0
         
       - name: Deploying application on cluster 
-        run : kubectl create deployment flexport-app --image=ghcr.io/${{github.repository}}/:main
+        run : |
+          kubectl create deployment flexport-app --image=ghcr.io/${{github.repository}}/:main
+          kubectl expose deployment flexport-app --type=NodePort --port=5000
+          
+      - name: Testing Deployment   
+        run : |
+          kubectl get services flexport-app
+          kubectl port-forward service/flexport-app 5000:5000
+          
+      - name: Run Coverage tests
+        run : |
+           export APP_URL=http://localhost:5000
+           PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/unit 
+           PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/functional 
+       
+      - name: Generate Coverage report
+        run : |
+           coverage report -m
+           
+      - name: Delete CLuster
+        run : |
+           kind delete cluster --name flexport-app
+            
