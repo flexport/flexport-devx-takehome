@@ -12,9 +12,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
+      
+      - name: Wait for all nodes in cluster to be ready
+        run : |
+          kubectl wait nodes --for condition=Ready --all
         
+      
       - name: Deploying application on cluster 
         run : |
           kubectl create deployment flexport-app --image=ghcr.io/${{github.repository}}/:main
