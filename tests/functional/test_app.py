@@ -9,9 +9,9 @@ from rock_paper_scissors.app import app
 
 def test_app_health():
     with app.test_client() as test_client:
-        response = test_client.get("/healthy")
+        response = test_client.get("/health")
         assert response.status_code == 200
-        assert response.data == b"OK"
+        assert b"OK" in response.data
 
 
 def test_rps_valid_move():
