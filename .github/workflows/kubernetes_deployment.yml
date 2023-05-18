@@ -1,0 +1,53 @@
+name: Deploying to Kubernetes cluster
+
+on:
+  workflow_run:
+    workflows: ["Build and publish docker image"]
+    types: 
+      - completed
+
+jobs:
+  create-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+      
+      - name: Wait for all nodes in cluster to be ready
+        run : |
+          kubectl wait nodes --for condition=Ready --all
+        
+      
+      - name: Deploying application on cluster 
+        run : |
+          kubectl create deployment flexport-app --image=ghcr.io/${{github.repository}}:main
+          kubectl wait pods --for condition=Ready --all
+          kubectl expose deployment flexport-app --type=NodePort --port=5000
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip          
+          pip install -r requirements.txt    
+          
+      - name: Testing Deployment   
+        run : |
+          kubectl get services flexport-app
+          kubectl port-forward service/flexport-app 5000:5000 > /dev/null &
+          
+      - name: Run Coverage tests
+        run : |
+           export APP_URL=http://localhost:5000
+           PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/unit 
+           PYTHONPATH="${PYTHON_PATH}:./src" coverage run -m pytest -v tests/functional 
+       
+      - name: Generate Coverage report
+        run : |
+           coverage report -m
+           
+      - name: Delete Cluster
+        run : |
+           kind delete cluster --name flexport-app
+            
