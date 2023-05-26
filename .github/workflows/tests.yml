@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        run: actions/checkout@v3
+        using: actions/checkout@v3
       - run: pip install -r requirements.txt --upgrade pip
       - run: pylint src tests
       - run: black --check src tests
