@@ -1,10 +1,12 @@
-name: Take home assignment
+name: Workflow1
 run-name: Run push checks
 on: [push]
 jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        run: actions/checkout@v3
       - run: pip install -r requirements.txt --upgrade pip
       - run: pylint src tests
       - run: black --check src tests
