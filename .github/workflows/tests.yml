@@ -1,0 +1,11 @@
+name: Take home assignment
+run-name: Run push checks
+on: [push]
+jobs:
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pip install -r requirements.txt --upgrade pip
+      - run: pylint src tests
+      - run: black --check src tests
+      - run: pytest tests
