@@ -18,4 +18,4 @@ def test_rps_return_values():
     """
 
     assert rock_paper_scissors(1)[0] in (0, -1, 1)
-    assert rock_paper_scissors(1)[1] in (0, -1, 1)
+    assert rock_paper_scissors(1)[1] in (0, 1, 2)
