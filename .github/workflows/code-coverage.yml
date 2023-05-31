@@ -1,6 +1,6 @@
 name: Workflow1
 run-name: Run push checks
-on: [push]
+on: []
 jobs:
   Linting:
     runs-on: ubuntu-latest
