@@ -1,4 +1,4 @@
-name: Workflow1
+name: lint-format-tests
 run-name: Run push checks
 on: ["push"]
 jobs:
