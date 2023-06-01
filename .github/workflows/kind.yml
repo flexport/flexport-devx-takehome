@@ -38,4 +38,5 @@ jobs:
         run: |
           kubectl get pods
           kubectl describe deploy app-deploy
+          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kind delete cluster --name test-cd
