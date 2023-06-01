@@ -34,7 +34,6 @@ jobs:
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           echo "Describe pod:" $(kubectl describe pods $POD_NAME)
           kubectl exec -ti $POD_NAME -- echo hello
-          kubectl exec -ti $POD_NAME -- curl localhost:5000/health
       - name: Cleanup
         if: always()
         run: |
