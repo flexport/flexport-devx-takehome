@@ -1,7 +1,7 @@
 name: "Test an example service using Kind"
 on:
   workflow_run:
-    workflows: ["Build"]
+    workflows: ["Build", "Build docker image and push to ghrc.io"]
     types:
       - completed
   pull_request:
