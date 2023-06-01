@@ -4,6 +4,9 @@ on:
     workflows: ["Build"]
     types:
       - completed
+  push:
+    branches:
+      - '*'
   pull_request:
     branches:
       - '*'

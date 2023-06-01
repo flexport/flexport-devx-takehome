@@ -1,6 +1,6 @@
 name: Build
 run-name: Build docker image and push to ghrc.io
-on: [pull_request]
+on: ["push"]
 jobs:
   BuildAndPush:
     runs-on: ubuntu-latest
