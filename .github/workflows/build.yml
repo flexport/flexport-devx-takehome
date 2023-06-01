@@ -1,4 +1,4 @@
-name: Workflow2
+name: Build
 run-name: Build docker image and push to ghrc.io
 on: [push]
 jobs:
