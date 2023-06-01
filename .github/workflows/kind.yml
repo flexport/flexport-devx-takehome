@@ -39,5 +39,5 @@ jobs:
           kubectl get pods
           kubectl describe deploy rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl describe ${{ POD_NAME }}
+          kubectl describe $POD_NAME
           kind delete cluster --name test-cd
