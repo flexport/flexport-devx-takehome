@@ -3,17 +3,13 @@ on: [pull_request, push]
 
 jobs:
   kind:
+    env:
+      IMAGE_REPO: ghcr.io/${{ github.repository_owner }}/app:latest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.4.0
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
       - name: Testing
         run: |
           kubectl wait nodes --for condition=Ready --all
@@ -23,7 +19,11 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy Application
         run: |
-          kubectl create deployment app-deploy --image=ghcr.io/${{ github.repository_owner }}/app:latest
+          kubectl create secret docker-registry ghcr-token \
+          --docker-username=${{ github.actor }} \
+          --docker-password=${{ secrets.GHCR_TOKEN }} \
+          --docker-server=ghcr.io
+          envsubst < k8s/app-deploy.yaml | kubectl apply -f -
           kubectl wait pods --for condition=Ready --timeout=90s --all
           kubectl expose deployment/app-deploy --type=NodePort --port 8080 --target-port 5000
       - name: Test Deployment

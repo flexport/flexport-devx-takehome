@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rps-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rps-app
+  template:
+    metadata:
+      labels:
+        app: rps-app
+    spec:
+      containers:
+      - name: rps-container
+        image: $IMAGE_REPO
+        ports:
+        - containerPort: 5000
+      imagePullSecrets:
+      - name: ghcr-token
