@@ -1,18 +1,18 @@
 name: "Test an example service using Kind"
 on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
   push:
     branches:
       - '*'
   pull_request:
     branches:
       - '*'
-  workflow_run:
-    workflows: ["Build"]
-    types:
-      - completed
-
 jobs:
   kind:
+  if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       IMAGE_REPO: ghcr.io/${{ github.repository_owner }}/app:latest
     runs-on: ubuntu-latest
