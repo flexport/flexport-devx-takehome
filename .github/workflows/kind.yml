@@ -32,8 +32,8 @@ jobs:
           echo NODE_PORT=${NODE_PORT}
           kubectl describe services/rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec $POD_NAME -- curl localhost:5000/health
-          curl localhost:5000/health
+          kubectl exec $POD_NAME -- curl localhost:$NODE_PORT/health
+          curl localhost:$NODE_PORT/health
       - name: Cleanup
         if: always()
         run: |
