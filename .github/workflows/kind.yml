@@ -25,18 +25,19 @@ jobs:
           --docker-server=ghcr.io
           envsubst < k8s/app-deploy.yaml | kubectl apply -f -
           kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/app-deploy --type=NodePort --port 8080 --target-port 5000
+          kubectl expose deployment/rps-deployment --type=NodePort --port 8080 --target-port 5000
       - name: Test Deployment
         run: |
-          export NODE_PORT=$(kubectl get services/app-deploy -o go-template='{{(index .spec.ports 0).nodePort}}')
+          export NODE_PORT=$(kubectl get services/rps-deployment -o go-template='{{(index .spec.ports 0).nodePort}}')
           echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/app-deploy
+          kubectl describe services/rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl exec -ti $POD_NAME -- curl localhost:5000/health
       - name: Cleanup
         if: always()
         run: |
           kubectl get pods
-          kubectl describe deploy app-deploy
+          kubectl describe deploy rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          kubectl describe ${{ POD_NAME }}
           kind delete cluster --name test-cd
