@@ -35,7 +35,6 @@ jobs:
           echo "Describe pod:" $(kubectl describe pods $POD_NAME)
           echo "get pod:" $(kubectl get pods $POD_NAME)
           echo "get pod logs:" $(kubectl logs $POD_NAME)
-          curl localhost:8080/health
           kubectl exec $POD_NAME -- curl localhost:5000/health
       - name: Cleanup
         if: always()
