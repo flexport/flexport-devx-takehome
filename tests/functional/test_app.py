@@ -50,7 +50,7 @@ def test_rps_no_input():
     Test Flask Application for no json payload
     """
     with app.test_client() as test_client:
-        response = test_client.post("/rps", content_type="application/json")
+        response = test_client.post("/rps", data=None, content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 400
         assert message == f'"" is invalid. Valid moves: {mapping}'
@@ -81,7 +81,7 @@ def test_rps_consistent_messages():
             assert False, f"Invalid game_result returned {game_result}"
 
 
-@pytest.mark.parametrize("move", ["rock", "Rock", "PAPER", "sCISSOR"])
+@pytest.mark.parametrize("move", ["rock", "Rock", "PAPER", "sCISSORs"])
 def test_rps_capitalization(move):
     """
     Test Flask Application should handle variations in capitalization
