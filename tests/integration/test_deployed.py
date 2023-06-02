@@ -6,7 +6,7 @@ import requests
 from rock_paper_scissors.app import mapping
 
 
-def request_deployment(endpoint, payload={}, get=False):
+def request_deployment(endpoint, payload=None, get=False):
     """
     Helper function for pinging a deployed service
     """
