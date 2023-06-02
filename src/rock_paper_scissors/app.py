@@ -14,10 +14,7 @@
    limitations under the License.
 """
 import json
-
-
 from flask import Flask, request
-
 from .rps import rock_paper_scissors
 
 
@@ -26,32 +23,51 @@ class InvalidMove(Exception):
     Invalid Move
     """
 
+
 app = Flask(__name__)
 
 
 @app.route("/health")
 def health():
+    """
+    Basic health check
+
+    Returns:
+        str: OK if run.
+    """
     return "OK"
 
-@app.route("/rps", methods = ['POST'])
-def rps():
-    # Create number to choice mapping
-    mapping = ["Rock", "Paper", "Scissors"]
 
-    move = request.json.get('move', '')
+# number to choice mapping
+mapping = ["Rock", "Paper", "Scissors"]
+
+
+@app.errorhandler(InvalidMove)
+def handle_invalid_move(error):
+    """
+    Handler for InvalidMove exception
+    """
+    return str(error), 400
+
+
+@app.route("/rps", methods=["POST"])
+def rps():
+    """
+    Rock paper scissors endpoint
+    """
+    move = request.json.get("move", "")
     try:
         user_choice = mapping.index(move.lower().capitalize())
-    except ValueError:
-        raise InvalidMove(f"{move} is invalid. Valid moves: {mapping}")
+    except ValueError as exc:
+        raise InvalidMove(f'"{move}" is invalid. Valid moves: {mapping}') from exc
 
-    game_result, pc_choice  = rock_paper_scissors(user_choice)
+    game_result, pc_choice = rock_paper_scissors(user_choice)
     if game_result == 0:
         result = "Tie"
     elif game_result == -1:
         result = f"I win, {mapping[pc_choice]} beats {move}"
     elif game_result == 1:
         result = f"You win, {move} beats {mapping[pc_choice]}"
-
-    return json.dumps({'result': result,
-                       'game_result': game_result,
-                       'pc_choice': pc_choice})
+    return json.dumps(
+        {"result": result, "game_result": game_result, "pc_choice": pc_choice}
+    )

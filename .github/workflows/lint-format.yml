@@ -1,0 +1,18 @@
+name: lint-format-tests
+run-name: lint, format, test
+on: ["push"]
+jobs:
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: pip install -r requirements.txt --upgrade pip
+      - name: Run linter
+        run: pylint src tests
+      - name: Run formatter
+        run: black --check src tests
+      - name: Run pytest
+        run: PYTHONPATH="${PYTHONPATH}:src" coverage run --include="src/*" -m pytest tests/unit tests/functional
+      - name: Generate coverage report
+        run: coverage report --show-missing
