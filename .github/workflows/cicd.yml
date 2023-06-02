@@ -26,7 +26,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.IMAGE_REPO }}
-          name: Build and push 
   DeployOnK8s:
     runs-on: ubuntu-latest
     # Depends on previous job's Docker image

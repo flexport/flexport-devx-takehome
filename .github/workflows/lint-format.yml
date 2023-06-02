@@ -8,6 +8,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - run: pip install -r requirements.txt --upgrade pip
-      - run: pylint src tests
-      - run: black --check src tests
-      - run: PYTHONPATH="${PYTHONPATH}:src" pytest tests/unit tests/functional
+      - name: Run linter
+        run: pylint src tests
+      - name: Run formatter
+        run: black --check src tests
+      - name: Run pytest
+        run: PYTHONPATH="${PYTHONPATH}:src" coverage run -m pytest tests/unit tests/functional
+      - name: Generate coverage report
+        run: coverage report
