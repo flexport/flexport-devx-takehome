@@ -61,6 +61,7 @@ jobs:
           pip install -r requirements.txt --upgrade pip
           kubectl get pods
           kubectl describe pods $POD_NAME
+          kubectl logs $POD_NAME
           PYTHONPATH="${PYTHONPATH}:src" coverage run --include="src/*" -m pytest  tests/integration
       - name: Generate Coverage Report
         run: coverage report --show-missing

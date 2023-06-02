@@ -1,5 +1,5 @@
 name: lint-format-tests
-run-name: Run push checks
+run-name: lint, format, test
 on: ["push"]
 jobs:
   Linting:
