@@ -53,7 +53,7 @@ def test_rps_no_input():
         response = test_client.post("/rps", content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 400
-        assert message == f'\"\" is invalid. Valid moves: {mapping}'
+        assert message == f'"" is invalid. Valid moves: {mapping}'
 
 
 def test_rps_consistent_messages():
