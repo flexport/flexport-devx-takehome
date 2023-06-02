@@ -54,10 +54,14 @@ def test_rps_no_input():
         assert response.status_code == 415
 
 
-def test_rps_consistent_messages():
+def test_rps_tie_message(mocker):
     """
-    Test Flask Application to ensure values are consistent with messages
+    Test Flask Application to ensure a correct tie message
+
+    PC: Rock
+    Player: Rock
     """
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=0)
     move = "Rock"
     with app.test_client() as test_client:
         response = test_client.post(
@@ -67,16 +71,49 @@ def test_rps_consistent_messages():
         assert response.status_code == 200
         assert isinstance(response_data, dict)
         result = response_data["result"]
-        game_result = response_data["game_result"]
+        assert result == "Tie"
+
+
+def test_rps_win_message(mocker):
+    """
+    Test Flask Application to ensure a correct win message
+
+    PC: Rock
+    Player: Paper
+    """
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=0)
+    move = "Paper"
+    with app.test_client() as test_client:
+        response = test_client.post(
+            "/rps", data=json.dumps({"move": move}), content_type="application/json"
+        )
+        response_data = json.loads(response.data)
+        assert response.status_code == 200
+        assert isinstance(response_data, dict)
+        result = response_data["result"]
         pc_choice = response_data["pc_choice"]
-        if game_result == 0:
-            assert result == "Tie"
-        elif game_result == -1:
-            assert result == f"I win, {mapping[pc_choice]} beats {move}"
-        elif game_result == 1:
-            assert result == f"You win, {move} beats {mapping[pc_choice]}"
-        else:
-            assert False, f"Invalid game_result returned {game_result}"
+        assert result == f"You win, {move} beats {mapping[pc_choice]}"
+
+
+def test_rps_lose_message(mocker):
+    """
+    Test Flask Application to ensure a correct lose message
+
+    PC: Rock
+    Player: Scissors
+    """
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=0)
+    move = "Scissors"
+    with app.test_client() as test_client:
+        response = test_client.post(
+            "/rps", data=json.dumps({"move": move}), content_type="application/json"
+        )
+        response_data = json.loads(response.data)
+        assert response.status_code == 200
+        assert isinstance(response_data, dict)
+        result = response_data["result"]
+        pc_choice = response_data["pc_choice"]
+        assert result == f"I win, {mapping[pc_choice]} beats {move}"
 
 
 @pytest.mark.parametrize("move", ["rock", "Rock", "PAPER", "sCISSORs"])
