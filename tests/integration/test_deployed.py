@@ -10,7 +10,7 @@ def request_deployment(endpoint, payload=None):
     Helper function for pinging a deployed service
     """
     url = 'localhost:5000'
-    return requests.post(url + "/" + endpoint, timeout=5)
+    return requests.post(url + "/" + endpoint, json=payload, timeout=5)
 
 
 def test_rps_health():
