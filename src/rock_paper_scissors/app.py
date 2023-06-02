@@ -14,8 +14,6 @@
    limitations under the License.
 """
 import json
-
-
 from flask import Flask, request
 from .rps import rock_paper_scissors
 

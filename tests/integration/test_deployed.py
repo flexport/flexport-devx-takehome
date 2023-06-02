@@ -3,6 +3,7 @@ This file will test a deployed flask application on k8s and send requests
 over the loopback address
 """
 import requests
+import pytest
 from rock_paper_scissors.app import mapping
 
 
