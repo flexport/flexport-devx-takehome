@@ -31,7 +31,7 @@ def test_rps_good_inputs(move):
         assert response.status_code == 200
 
 
-@pytest.mark.parametrize("bad_move", ["", "Dog", "123", "🗿"])
+@pytest.mark.parametrize("bad_move", ["", "Dog", "123", "Rok"])
 def test_rps_bad_inputs(bad_move):
     """
     Test Flask Application for invalid inputs

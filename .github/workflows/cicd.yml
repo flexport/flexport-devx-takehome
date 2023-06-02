@@ -49,15 +49,10 @@ jobs:
           --docker-server=ghcr.io
           envsubst < k8s/app-deploy.yaml | kubectl apply -f -
           kubectl wait pods --for condition=Ready --timeout=90s --all
-          kubectl expose deployment/rps-deployment --type=NodePort --port 8080 --target-port 5000
+          kubectl expose deployment/rps-deployment --type=NodePort --port 5000 --target-port 5000
       - name: Test Deployment
         run: |
-          export NODE_PORT=$(kubectl get services/rps-deployment -o go-template='{{(index .spec.ports 0).nodePort}}')
-          echo NODE_PORT=${NODE_PORT}
-          kubectl describe services/rps-deployment
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl exec $POD_NAME -- curl localhost:5000/health
-          kubectl port-forward service/rps-deployment 5000:8080 > /dev/null &
+          kubectl port-forward service/rps-deployment 5000:5000 > /dev/null &
           pip install -r requirements.txt --upgrade pip
           PYTHONPATH="${PYTHONPATH}:src" pytest tests/integration
       - name: Cleanup
