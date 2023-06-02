@@ -63,8 +63,4 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          kubectl get pods
-          kubectl describe pods
-          export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-          kubectl logs $POD_NAME
           kind delete cluster --name test-cd
