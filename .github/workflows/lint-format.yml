@@ -15,4 +15,4 @@ jobs:
       - name: Run pytest
         run: PYTHONPATH="${PYTHONPATH}:src" coverage run --include="src/*" -m pytest tests/unit tests/functional
       - name: Generate coverage report
-        run: coverage report
+        run: coverage report --show-missing
