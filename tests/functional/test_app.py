@@ -18,6 +18,7 @@ def test_rps():
         )
         assert response.status_code == 200
 
+
 @pytest.mark.parametrize("move", mapping)
 def test_rps_good_inputs(move):
     """
@@ -28,6 +29,7 @@ def test_rps_good_inputs(move):
             "/rps", data=json.dumps({"move": move}), content_type="application/json"
         )
         assert response.status_code == 200
+
 
 @pytest.mark.parametrize("bad_move", ["", "Dog", "123", "🗿"])
 def test_rps_bad_inputs(bad_move):
@@ -40,19 +42,19 @@ def test_rps_bad_inputs(bad_move):
         )
         message = response.data.decode("utf-8")
         assert response.status_code == 400
-        assert message == f"\"{bad_move}\" is invalid. Valid moves: {mapping}"
+        assert message == f'"{bad_move}" is invalid. Valid moves: {mapping}'
+
 
 def test_rps_no_input(bad_move):
     """
     Test Flask Application for no json payload
     """
     with app.test_client() as test_client:
-        response = test_client.post(
-            "/rps", content_type="application/json"
-        )
+        response = test_client.post("/rps", content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 400
-        assert message == f"\"{bad_move}\" is invalid. Valid moves: {mapping}"
+        assert message == f'"{bad_move}" is invalid. Valid moves: {mapping}'
+
 
 def test_rps_consistent_messages():
     """
@@ -79,6 +81,7 @@ def test_rps_consistent_messages():
         else:
             assert False, f"Invalid game_result returned {game_result}"
 
+
 @pytest.mark.parametrize("move", ["rock", "Rock", "PAPER", "sCISSOR"])
 def test_rps_capitalization(move):
     """
@@ -90,15 +93,13 @@ def test_rps_capitalization(move):
         )
         assert response.status_code == 200
 
+
 def test_rps_health_check():
     """
     Test Flask Application health
     """
     with app.test_client() as test_client:
-        response = test_client.post(
-            "/health", content_type="application/json"
-        )
+        response = test_client.post("/health", content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 200
         assert message == "OK"
-    

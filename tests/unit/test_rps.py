@@ -5,11 +5,13 @@ Testing individual functions and their parameters
 """
 from rock_paper_scissors.rps import rock_paper_scissors
 
+
 def test_rps():
     """
     Basic test for Rock Paper Scissors
     """
     assert rock_paper_scissors(1) is not None
+
 
 def test_rps_inputs():
     """
@@ -17,6 +19,7 @@ def test_rps_inputs():
     """
     for choice in range(3):
         assert rock_paper_scissors(choice) is not None
+
 
 def test_rps_game_result():
     """
@@ -28,6 +31,7 @@ def test_rps_game_result():
         res = rock_paper_scissors(1)[0]
         found[res] = True
         assert res in (-1, 0, 1)
+
 
 def test_rps_pc_choice():
     """

@@ -39,8 +39,10 @@ def health():
     """
     return "OK"
 
+
 # number to choice mapping
 mapping = ["Rock", "Paper", "Scissors"]
+
 
 @app.errorhandler(InvalidMove)
 def handle_invalid_move(error):
@@ -48,6 +50,7 @@ def handle_invalid_move(error):
     Handler for InvalidMove exception
     """
     return str(error), 400
+
 
 @app.route("/rps", methods=["POST"])
 def rps():
@@ -59,7 +62,7 @@ def rps():
     try:
         user_choice = mapping.index(move.lower().capitalize())
     except ValueError as exc:
-        raise InvalidMove(f"\"{move}\" is invalid. Valid moves: {mapping}") from exc
+        raise InvalidMove(f'"{move}" is invalid. Valid moves: {mapping}') from exc
 
     game_result, pc_choice = rock_paper_scissors(user_choice)
     if game_result == 0:
