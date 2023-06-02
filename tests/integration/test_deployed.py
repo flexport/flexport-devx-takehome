@@ -39,6 +39,36 @@ def test_rps_basic():
     assert "pc_choice" in response
 
 
+def test_rps_game_result():
+    """
+    Test that Rock Paper Scissors returns correct game result values
+    over the network
+    """
+    payload = {"move": "Rock"}
+    # find one result of each: 0, -1, 1
+    found = [False for _ in range(3)]
+    while not all(found):
+        response = request_deployment("rps", payload).json()
+        gres = response["game_result"]
+        found[gres] = True
+        assert gres in (-1, 0, 1)
+
+
+def test_rps_pc_choice():
+    """
+    Test that Rock Paper Scissors returns correct pc choices
+    over the network
+    """
+    payload = {"move": "Rock"}
+    # find one result of each: 0, 1, 2
+    found = [False for _ in range(3)]
+    while not all(found):
+        response = request_deployment("rps", payload).json()
+        gres = response["game_result"]
+        found[gres] = True
+        assert gres in (0, 1, 2)
+
+
 def test_rps_bad_payload():
     """
     Test an invalid move
@@ -56,3 +86,11 @@ def test_rps_no_payload():
     """
     response = request_deployment("rps")
     assert response.status_code == 415
+
+
+def test_rps_wrong_method():
+    """
+    Test calling GET request on rps but rps is POST only
+    """
+    response = request_deployment("rps", get=True)
+    assert response.status_code == 405

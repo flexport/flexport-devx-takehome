@@ -57,7 +57,6 @@ def rps():
     """
     Rock paper scissors endpoint
     """
-
     move = request.json.get("move", "")
     try:
         user_choice = mapping.index(move.lower().capitalize())
@@ -71,7 +70,6 @@ def rps():
         result = f"I win, {mapping[pc_choice]} beats {move}"
     elif game_result == 1:
         result = f"You win, {move} beats {mapping[pc_choice]}"
-
     return json.dumps(
         {"result": result, "game_result": game_result, "pc_choice": pc_choice}
     )

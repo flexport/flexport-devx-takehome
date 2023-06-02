@@ -51,7 +51,6 @@ def test_rps_no_input():
     """
     with app.test_client() as test_client:
         response = test_client.post("/rps")
-        message = response.data.decode("utf-8")
         assert response.status_code == 415
 
 
