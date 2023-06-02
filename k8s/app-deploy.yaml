@@ -17,5 +17,7 @@ spec:
         image: $IMAGE_REPO
         ports:
         - containerPort: 5000
+        securityContext:
+          allowPrivilegeEscalation: false
       imagePullSecrets:
       - name: ghcr-token
