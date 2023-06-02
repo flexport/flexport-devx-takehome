@@ -10,7 +10,7 @@ def request_deployment(endpoint, payload=None, get=False):
     """
     Helper function for pinging a deployed service
     """
-    url = "http://localhost:8081"
+    url = "http://localhost:5000"
     if get:
         return requests.get(url + "/" + endpoint, timeout=5)
     return requests.post(url + "/" + endpoint, json=payload, timeout=5)

@@ -57,7 +57,7 @@ jobs:
           kubectl describe services/rps-deployment
           export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
           kubectl exec $POD_NAME -- curl localhost:5000/health
-          kubectl port-forward service/rps-deployment 8081:5000 > /dev/null &
+          kubectl port-forward service/rps-deployment 5000:5000 > /dev/null &
           pip install -r requirements.txt --upgrade pip
           PYTHONPATH="${PYTHONPATH}:src" pytest tests/integration
       - name: Cleanup
