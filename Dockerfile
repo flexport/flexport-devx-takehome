@@ -7,7 +7,7 @@ COPY requirements.txt .
 COPY src/ /app/src
 
 # Create a non-root user and group for better security
-RUN groupadd -r app_group && useradd -r -g app_group app_user
+RUN groupadd -r app_group && useradd -r -g app_group -m app_user
 
 RUN chown app_user:app_group /app
 
