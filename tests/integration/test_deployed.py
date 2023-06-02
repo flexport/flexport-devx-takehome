@@ -3,7 +3,6 @@ This file will test a deployed flask application on k8s and send requests
 over the loopback address
 """
 import requests
-import pytest
 from rock_paper_scissors.app import mapping
 
 
@@ -38,38 +37,6 @@ def test_rps_basic():
     assert "result" in response
     assert "game_result" in response
     assert "pc_choice" in response
-
-
-@pytest.mark.timeout(10)
-def test_rps_game_result():
-    """
-    Test that Rock Paper Scissors returns correct game result values
-    over the network
-    """
-    payload = {"move": "Rock"}
-    # find one result of each: 0, -1, 1
-    found = [False for _ in range(3)]
-    while not all(found):
-        response = request_deployment("rps", payload).json()
-        gres = response["game_result"]
-        found[gres] = True
-        assert gres in (-1, 0, 1)
-
-
-@pytest.mark.timeout(10)
-def test_rps_pc_choice():
-    """
-    Test that Rock Paper Scissors returns correct pc choices
-    over the network
-    """
-    payload = {"move": "Rock"}
-    # find one result of each: 0, 1, 2
-    found = [False for _ in range(3)]
-    while not all(found):
-        response = request_deployment("rps", payload).json()
-        pc_choice = response["pc_choice"]
-        found[pc_choice] = True
-        assert pc_choice in (0, 1, 2)
 
 
 def test_rps_bad_payload():

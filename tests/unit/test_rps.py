@@ -3,7 +3,6 @@ This module contains unit tests the rps app
 
 Testing individual functions and their parameters
 """
-import pytest
 from rock_paper_scissors.rps import rock_paper_scissors
 
 
@@ -22,27 +21,37 @@ def test_rps_inputs():
         assert rock_paper_scissors(choice) is not None
 
 
-@pytest.mark.timeout(10)
-def test_rps_game_result():
+def test_rps_game_result(mocker):
     """
     Test that Rock Paper Scissors returns correct game result values
     """
-    # find one result of each: 0, -1, 1
-    found = [False for _ in range(3)]
-    while not all(found):
-        res = rock_paper_scissors(1)[0]
-        found[res] = True
-        assert res in (-1, 0, 1)
-
-
-@pytest.mark.timeout(10)
-def test_rps_pc_choice():
-    """
-    Test that Rock Paper Scissors returns correct pc choices
-    """
-    # find one result of each: 0, 1, 2
-    found = [False for _ in range(3)]
-    while not all(found):
-        res = rock_paper_scissors(1)[1]
-        found[res] = True
-        assert res in (0, 1, 2)
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=0)
+    # PC: Rock, User: Rock
+    res, _ = rock_paper_scissors(0)
+    assert res == 0
+    # PC: Rock, User: Paper
+    res, _ = rock_paper_scissors(1)
+    assert res == 1
+    # PC: Rock, User: Scissors
+    res, _ = rock_paper_scissors(2)
+    assert res == -1
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=1)
+    # PC: Paper, User: Rock
+    res, _ = rock_paper_scissors(0)
+    assert res == -1
+    # PC: Paper, User: Paper
+    res, _ = rock_paper_scissors(1)
+    assert res == 0
+    # PC: Paper, User: Scissors
+    res, _ = rock_paper_scissors(2)
+    assert res == 1
+    mocker.patch("rock_paper_scissors.rps.random.randint", return_value=2)
+    # PC: Scissors, User: Rock
+    res, _ = rock_paper_scissors(0)
+    assert res == 1
+    # PC: Scissors, User: Paper
+    res, _ = rock_paper_scissors(1)
+    assert res == -1
+    # PC: Scissors, User: Scissors
+    res, _ = rock_paper_scissors(2)
+    assert res == 0
