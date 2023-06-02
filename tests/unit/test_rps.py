@@ -33,7 +33,7 @@ def test_rps_game_result(mocker):
     res, _ = rock_paper_scissors(1)
     assert res == 1
     # PC: Rock, User: Scissors
-    res, _ = rock_paper_scissors(1)
+    res, _ = rock_paper_scissors(2)
     assert res == -1
     mocker.patch("rock_paper_scissors.rps.random.randint", return_value=1)
     # PC: Paper, User: Rock
@@ -43,7 +43,7 @@ def test_rps_game_result(mocker):
     res, _ = rock_paper_scissors(1)
     assert res == 0
     # PC: Paper, User: Scissors
-    res, _ = rock_paper_scissors(1)
+    res, _ = rock_paper_scissors(2)
     assert res == 1
     mocker.patch("rock_paper_scissors.rps.random.randint", return_value=2)
     # PC: Scissors, User: Rock
@@ -53,5 +53,5 @@ def test_rps_game_result(mocker):
     res, _ = rock_paper_scissors(1)
     assert res == -1
     # PC: Scissors, User: Scissors
-    res, _ = rock_paper_scissors(1)
+    res, _ = rock_paper_scissors(2)
     assert res == 0
