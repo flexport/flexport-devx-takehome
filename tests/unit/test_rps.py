@@ -28,31 +28,31 @@ def test_rps_game_result(mocker):
     """
     mocker.patch("rock_paper_scissors.rps.random.randint", return_value=0)
     # PC: Rock, User: Rock
-    gr, _ = rock_paper_scissors(0)
-    assert gr == 0
+    res, _ = rock_paper_scissors(0)
+    assert res == 0
     # PC: Rock, User: Paper
-    gr, _ = rock_paper_scissors(1)
-    assert gr == 1
+    res, _ = rock_paper_scissors(1)
+    assert res == 1
     # PC: Rock, User: Scissors
-    gr, _ = rock_paper_scissors(1)
-    assert gr == -1
+    res, _ = rock_paper_scissors(1)
+    assert res == -1
     mocker.patch("rock_paper_scissors.rps.random.randint", return_value=1)
     # PC: Paper, User: Rock
-    gr, _ = rock_paper_scissors(0)
-    assert gr == -1
+    res, _ = rock_paper_scissors(0)
+    assert res == -1
     # PC: Paper, User: Paper
-    gr, _ = rock_paper_scissors(1)
-    assert gr == 0
+    res, _ = rock_paper_scissors(1)
+    assert res == 0
     # PC: Paper, User: Scissors
-    gr, _ = rock_paper_scissors(1)
-    assert gr == 1
+    res, _ = rock_paper_scissors(1)
+    assert res == 1
     mocker.patch("rock_paper_scissors.rps.random.randint", return_value=2)
     # PC: Scissors, User: Rock
-    gr, _ = rock_paper_scissors(0)
-    assert gr == 1
+    res, _ = rock_paper_scissors(0)
+    assert res == 1
     # PC: Scissors, User: Paper
-    gr, _ = rock_paper_scissors(1)
-    assert gr == -1
+    res, _ = rock_paper_scissors(1)
+    assert res == -1
     # PC: Scissors, User: Scissors
-    gr, _ = rock_paper_scissors(1)
-    assert gr == 0
+    res, _ = rock_paper_scissors(1)
+    assert res == 0
