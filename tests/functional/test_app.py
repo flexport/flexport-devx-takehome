@@ -45,7 +45,7 @@ def test_rps_bad_inputs(bad_move):
         assert message == f'"{bad_move}" is invalid. Valid moves: {mapping}'
 
 
-def test_rps_no_input(bad_move):
+def test_rps_no_input():
     """
     Test Flask Application for no json payload
     """
@@ -53,7 +53,7 @@ def test_rps_no_input(bad_move):
         response = test_client.post("/rps", content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 400
-        assert message == f'"{bad_move}" is invalid. Valid moves: {mapping}'
+        assert message == f'\"\" is invalid. Valid moves: {mapping}'
 
 
 def test_rps_consistent_messages():
@@ -68,10 +68,9 @@ def test_rps_consistent_messages():
         response_data = json.loads(response.data)
         assert response.status_code == 200
         assert isinstance(response_data, dict)
-
-        result = response_data.result
-        game_result = response_data.game_result
-        pc_choice = response_data.pc_choice
+        result = response_data["result"]
+        game_result = response_data["game_result"]
+        pc_choice = response_data["pc_choice"]
         if game_result == 0:
             assert result == "Tie"
         elif game_result == -1:

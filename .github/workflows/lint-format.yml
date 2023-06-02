@@ -10,4 +10,4 @@ jobs:
       - run: pip install -r requirements.txt --upgrade pip
       - run: pylint src tests
       - run: black --check src tests
-      - run: PYTHONPATH="${PYTHONPATH}:src" pytest tests/functional tests/integration
+      - run: PYTHONPATH="${PYTHONPATH}:src" pytest tests/unit tests/functional
