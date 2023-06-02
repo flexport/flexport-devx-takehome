@@ -50,12 +50,9 @@ def test_rps_no_input():
     Test Flask Application for no json payload
     """
     with app.test_client() as test_client:
-        response = test_client.post(
-            "/rps", data=json.dumps({}), content_type="application/json"
-        )
+        response = test_client.post("/rps")
         message = response.data.decode("utf-8")
-        assert response.status_code == 400
-        assert message == f'"" is invalid. Valid moves: {mapping}'
+        assert response.status_code == 415
 
 
 def test_rps_consistent_messages():

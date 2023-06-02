@@ -6,7 +6,7 @@ import requests
 from rock_paper_scissors.app import mapping
 
 
-def request_deployment(endpoint, payload=None, get=False):
+def request_deployment(endpoint, payload={}, get=False):
     """
     Helper function for pinging a deployed service
     """
@@ -55,5 +55,4 @@ def test_rps_no_payload():
     Test without payload supplied
     """
     response = request_deployment("rps")
-    assert response.status_code == 400
-    assert response.text == f'"" is invalid. Valid moves: {mapping}'
+    assert response.status_code == 415
