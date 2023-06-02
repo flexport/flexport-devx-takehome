@@ -21,6 +21,7 @@ def test_rps_inputs():
         assert rock_paper_scissors(choice) is not None
 
 
+@pytest.mark.timeout(10)
 def test_rps_game_result():
     """
     Test that Rock Paper Scissors returns correct game result values
@@ -33,6 +34,7 @@ def test_rps_game_result():
         assert res in (-1, 0, 1)
 
 
+@pytest.mark.timeout(10)
 def test_rps_pc_choice():
     """
     Test that Rock Paper Scissors returns correct pc choices

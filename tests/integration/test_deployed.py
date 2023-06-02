@@ -39,6 +39,7 @@ def test_rps_basic():
     assert "pc_choice" in response
 
 
+@pytest.mark.timeout(10)
 def test_rps_game_result():
     """
     Test that Rock Paper Scissors returns correct game result values
@@ -54,6 +55,7 @@ def test_rps_game_result():
         assert gres in (-1, 0, 1)
 
 
+@pytest.mark.timeout(10)
 def test_rps_pc_choice():
     """
     Test that Rock Paper Scissors returns correct pc choices
@@ -64,9 +66,9 @@ def test_rps_pc_choice():
     found = [False for _ in range(3)]
     while not all(found):
         response = request_deployment("rps", payload).json()
-        gres = response["game_result"]
-        found[gres] = True
-        assert gres in (0, 1, 2)
+        pc_choice = response["pc_choice"]
+        found[pc_choice] = True
+        assert pc_choice in (0, 1, 2)
 
 
 def test_rps_bad_payload():
