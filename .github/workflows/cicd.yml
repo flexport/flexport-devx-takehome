@@ -59,6 +59,8 @@ jobs:
           kubectl exec $POD_NAME -- curl localhost:5000/health
           kubectl port-forward service/rps-deployment 5000:5000 > /dev/null &
           pip install -r requirements.txt --upgrade pip
+          kubectl get pods
+          kubectl describe pods $POD_NAME
           PYTHONPATH="${PYTHONPATH}:src" coverage run --include="src/*" -m pytest  tests/integration
       - name: Generate Coverage Report
         run: coverage report --show-missing
