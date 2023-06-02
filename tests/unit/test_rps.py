@@ -3,7 +3,6 @@ This module contains unit tests the rps app
 
 Testing individual functions and their parameters
 """
-import pytest
 from rock_paper_scissors.rps import rock_paper_scissors
 
 
