@@ -98,7 +98,7 @@ def test_rps_health_check():
     Test Flask Application health
     """
     with app.test_client() as test_client:
-        response = test_client.post("/health", content_type="application/json")
+        response = test_client.get("/health", content_type="application/json")
         message = response.data.decode("utf-8")
         assert response.status_code == 200
         assert message == "OK"

@@ -6,11 +6,13 @@ import requests
 from rock_paper_scissors.app import mapping
 
 
-def request_deployment(endpoint, payload=None):
+def request_deployment(endpoint, payload=None, get=False):
     """
     Helper function for pinging a deployed service
     """
     url = "localhost:5000"
+    if get:
+        return requests.get(url + "/" + endpoint, timeout=5)
     return requests.post(url + "/" + endpoint, json=payload, timeout=5)
 
 
@@ -18,7 +20,7 @@ def test_rps_health():
     """
     Test health check
     """
-    response = request_deployment("health")
+    response = request_deployment("health", get=True)
     assert response.status_code == 200
     assert response.text == "OK"
 
