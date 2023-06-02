@@ -17,7 +17,6 @@ import json
 
 
 from flask import Flask, request
-
 from .rps import rock_paper_scissors
 
 
@@ -44,8 +43,11 @@ def health():
 mapping = ["Rock", "Paper", "Scissors"]
 
 @app.errorhandler(InvalidMove)
-def handle_invalid_move(e):
-    return str(e), 400
+def handle_invalid_move(error):
+    """
+    Handler for InvalidMove exception
+    """
+    return str(error), 400
 
 @app.route("/rps", methods=["POST"])
 def rps():

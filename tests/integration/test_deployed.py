@@ -5,15 +5,28 @@ over the loopback address
 import requests
 from rock_paper_scissors.app import mapping
 
-url = 'localhost:5000'
+def request_deployment(endpoint, payload=None):
+    """
+    Helper function for pinging a deployed service
+    """
+    url = 'localhost:5000'
+    return requests.post(url + "/" + endpoint, timeout=5)
+
+
 def test_rps_health():
-    response = requests.post(url + "/health")
+    """
+    Test health check
+    """
+    response = request_deployment("health")
     assert response.status_code == 200
     assert response.text == "OK"
 
 def test_rps_basic():
+    """
+    Test a basic query
+    """
     payload = {'move': 'Rock'}
-    response = requests.post(url + "/rps", json=payload)
+    response = request_deployment("rps", payload)
     assert response.status_code == 200
     response = response.json()
     assert isinstance(response, dict)
@@ -22,13 +35,19 @@ def test_rps_basic():
     assert "pc_choice" in response
 
 def test_rps_bad_payload():
+    """
+    Test an invalid move
+    """
     move = "invalid_move"
     payload = {'move': move}
-    response = requests.post(url + "/rps", json=payload)
+    response = request_deployment("rps", payload)
     assert response.status_code == 400
     assert response.text == f"\"{move}\" is invalid. Valid moves: {mapping}"
 
 def test_rps_no_payload():
-    response = requests.post(url + "/rps")
+    """
+    Test without payload supplied
+    """
+    response = request_deployment("rps")
     assert response.status_code == 400
     assert response.text == f"\"\" is invalid. Valid moves: {mapping}"

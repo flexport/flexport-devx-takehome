@@ -54,7 +54,7 @@ def test_rps_no_input(bad_move):
         assert response.status_code == 400
         assert message == f"\"{bad_move}\" is invalid. Valid moves: {mapping}"
 
-def test_rps_no_input():
+def test_rps_consistent_messages():
     """
     Test Flask Application to ensure values are consistent with messages
     """
@@ -67,7 +67,9 @@ def test_rps_no_input():
         assert response.status_code == 200
         assert isinstance(response_data, dict)
 
-        result, game_result, pc_choice = response_data.result, response_data.game_result, response_data.pc_choice
+        result = response_data.result
+        game_result = response_data.game_result
+        pc_choice = response_data.pc_choice
         if game_result == 0:
             assert result == "Tie"
         elif game_result == -1:
